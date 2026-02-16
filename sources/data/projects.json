@@ -1,0 +1,59 @@
+[
+  {
+    "Name": "PacTSI",
+    "Année": "2019",
+    "Description": "Petit jeu insipré de Pacman, projet en classe de seconde option Technologie et Science Informatique (TSI)",
+    "Interets": [
+      "Level Design",
+      "Soud Design/musique",
+      "Graphic Design",
+      "UI Design",
+      "Inputs pour PC (clavier) et mobile (joystick tactile)"
+    ],
+    "Tags": [
+      "Scratch"
+    ],
+    "Lien": "https://scratch.mit.edu/projects/282619937/",
+    "Thumbnail": "./sources/images/project-thumbnails/image1.gif"
+  },
+  {
+    "Name": "Bot en Caoutchouc",
+    "Année": "2020",
+    "Description": "Bot Discord (Mini-jeux, modération...)",
+    "Interets": [
+      "API Discord",
+      "Autres APIs",
+      "Développement de mini-jeux"
+    ],
+    "Tags": [
+      "Python"
+    ],
+    "Lien": "https://top.gg/bot/657708468324532318",
+    "Thumbnail": "./sources/images/project-thumbnails/image2.gif"
+  },
+  {
+    "Name": "Portfolio",
+    "Année": "2022",
+    "Description": "Site web front-end\n\n- Première vraie experience de développement web\n- Design web",
+    "Interets": [
+      "Design web",
+      "Front-end"
+    ],
+    "Tags": [
+      "CSS",
+      "HTML",
+      "Javascript"
+    ],
+    "Lien": "https://alexandre.malfre.yt/",
+    "Thumbnail": "./sources/images/project-thumbnails/image3.gif"
+  },
+  {
+    "Name": "D'autres projets à venir...",
+    "Année": "",
+    "Description": "Bientôt d'autres projets sur ce site !",
+    "Interets": [],
+    "Tags": [],
+    "Lien": "#",
+    "Thumbnail": "./sources/images/project-thumbnails/a-venir.gif"
+  }
+]

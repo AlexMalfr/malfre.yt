@@ -1,0 +1,434 @@
+@import "https://www.malfre.yt/sources/global.css";
+
+
+/* Body, header, footer */
+body {
+    cursor: url("../images/cursors/cursor.svg"), auto;
+    background-color: #FFF;
+    color: #222;
+}
+
+header { margin-bottom: 30px; }
+footer { margin-top: 30px; }
+
+header, footer {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 30px;
+    background-color: black;
+    color: #CCC;
+}
+
+header > *, footer > * { margin: 30px 0; } /* Pour éviter que le contenu ne soit collé aux bords */
+
+
+/* Titres */
+@media (max-width: 700px) {
+    /* Pour éviter que le titre ne soit collé au menu */
+    header h1 { margin-top: 50px; }
+}
+
+h2 {
+    margin-top: 50px;
+    font-size: 1.7em;
+}
+
+
+
+/* Liens */
+a {
+    color: #222;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+a:hover {
+    color: #888;
+    transition-property: color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+
+
+/* Texte */
+abbr {
+    font-weight: bold;
+    padding-inline: 2px;
+    text-decoration: dotted underline;
+    text-underline-offset: 0.2em;
+    cursor: help;
+}
+
+
+
+/* blocs */
+.block {
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #FFF;
+    border: 3px solid #000;
+    color: #000;
+}
+
+
+
+/* Curseurs */
+a:hover,
+input[type='button']:hover {
+    cursor: url("../images/cursors/cursor_hover.svg"), pointer;
+}
+
+input[type='text']:hover,
+input[type='email']:hover,
+input[type='number']:hover,
+input[type='password']:hover,
+input[type='search']:hover,
+input[type='tel']:hover,
+input[type='name']:hover,
+input[type='url']:hover {
+    cursor: url("../images/cursors/cursor_text.svg"), text;
+}
+
+*:disabled:hover {
+    cursor: url("../images/cursors/cursor_disabled.svg"), disabled;
+}
+
+
+
+/* Menu */
+#homebutton, #en { 
+    position: absolute;
+    top: 0;
+    margin: 30px;
+}
+
+#homebutton { left: 0; }
+#en { right: 0; }
+
+#homebutton img, #en img {
+    height: 30px;
+    transition-property: height, filter;
+    transition-duration: 0.5s;
+}
+
+#homebutton img:hover, #en img:hover {
+    height: 35px;
+    transition-duration: 1.5s;
+}
+
+#homebutton img { filter: invert(30%); }
+#homebutton img:hover { filter: invert(50%); }
+
+
+
+/* Liens réseaux sociaux */
+.liens {
+    margin-inline: 30px;
+}
+
+.liens ul {
+    padding-inline: 0; /* Pour centrer la liste */
+}
+
+.liens ul li {
+    list-style: none;
+    display: inline-block;
+    margin-block: 10px;
+}
+
+.social-icon {
+    margin-inline: 3px;
+    width: 30px;
+    filter: invert(80%);
+    transition-property: transform, filter, margin-inline;
+    transition-duration: 1s;
+}
+
+.social-icon:hover {
+    margin-inline: 20px;
+    filter: invert(1);
+    transform: scale(1.5);
+    transition-property: transform, filter, margin-inline;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+@media (max-width: 700px) {
+    /* Pour éviter que les icônes ne soient trop petites sur mobile */
+    .social-icon {
+        margin-inline: 5px;
+        width: 35px;
+    }
+}
+
+
+/* Menus déroulants */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    height: 0;
+    background-color: #1F1F1F;
+    min-width: 160px;
+    box-shadow: 2px 2px 16px 0px rgba(255, 255, 255, 0.2);
+    transition-property: height;
+    transition-duration: 0.5s;
+    width: fit-content;
+}
+
+.dropdown:hover .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    transition-property: height;
+    transition-duration: 0.5s;
+}
+
+.dropdown-item {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    height: 40px;
+    /* width: max-content; */
+    padding: 5px auto;
+    border: 1px solid #555;
+}
+
+.dropdown-item:hover {
+    background-color: #252525
+}
+
+.dropdown-item img, input.dropdown-item[type="image"] {
+    margin: 0 10px;
+    height: 30px;
+    width: 30px;
+    filter: invert(80%);
+    transition-property: filter;
+    transition-duration: 0.5s;
+
+
+}
+
+.dropdown-item:hover img, .dropdown-item:hover input.dropdown-item[type="image"] {
+    filter: invert(1);
+    transition-property: filter;
+    transition-duration: 0.5s;
+}
+
+
+
+/* Section "à propos de moi" */
+#aboutme-div {
+    margin: 0 auto;
+    width: fit-content;
+}
+
+#aboutme-div ul li {
+    text-align: left;
+    list-style: "➜";
+    position: relative;
+    padding-left: 10px;
+}
+
+/* Boutons "Mon LinkedIn" et "Mon CV" */
+.button {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 30px;
+    border-radius: 0;
+    border: 2px solid #000;
+    background-color: none;
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #000;
+    color: #FFF;
+    transition-property: background-color, color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+
+
+/* Section "Mes projets" */
+#projects-timeline {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 15px;
+    padding-inline: 10px;
+}
+
+#projects-timeline a {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    text-decoration: none;
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+}
+
+#projects-timeline a:hover {
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+    transform: scale(1.05);
+}
+
+/* Projet */
+.project-div {
+    display: inline-block;
+    min-width: 250px;
+    max-width: 300px;
+    min-height: 150px;
+    margin: 0px 5px;
+    padding: 10px;
+}
+
+.project-div .project-thumbnail {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.project-div .project-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.project-div .project-date {
+    font-weight: bold;
+}
+
+.project-div .project-description {
+    white-space: pre-wrap;
+    text-align: justify;
+    margin: 15px;
+}
+
+.project-div .project-interests-title {
+    font-weight: bold;
+    margin: 5px;
+}
+
+.project-div ul.project-interests {
+    text-align: left;
+}
+
+.project-div ul.project-interests li {
+    list-style: "➜";
+    position: relative;
+    padding-left: 10px;
+}
+
+.project-div .project-tag {
+    display: inline-block;
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: #000;
+    color: #FFF;
+    font-weight: bold;
+}
+
+/* Scrollbar */
+#projects-timeline::-webkit-scrollbar {
+    height: 10px;
+}
+
+#projects-timeline::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#projects-timeline::-webkit-scrollbar-thumb {
+    background: #CCC;
+    border-radius: 10px;
+    margin: 3px;
+}
+
+/* Sur téléphone, la scrollbar est plus grande */
+@media (max-width: 700px) {
+    #projects-timeline::-webkit-scrollbar {
+        height: 20px;
+    }
+
+    #projects-timeline::-webkit-scrollbar-thumb {
+        border-radius: 20px;
+    }
+}
+
+
+
+/* Section "Anecdotes" */
+#anecdote-div {
+    position: relative;
+    width: 70%;
+    height: auto;
+    margin: 10px auto;
+    padding-inline: 30px 70px;
+    padding-block: 20px 50px;
+    max-width: 800px;
+}
+
+/* Sur téléphone, l'anecdote est centrée verticalement */
+@media (max-width: 800px) {
+    #anecdote-content {
+        flex-direction: column;
+    }
+
+    #anecdote-div {
+        padding-inline: 30px;
+    }
+}
+
+#anecdote-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+#anecdote-emoji {
+    font-size: 2.5em;
+    margin-inline: 15px;
+    margin-block: 0;
+    vertical-align: middle;
+}
+
+#refresh {
+    width: 30px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    transition-property: transform, filter;
+}
+
+#refresh:hover {
+    transform: rotate(360deg) scale(1.2); /* rotation + agrandissement */
+    transition-duration: 0.5s;
+}
+
+#refresh:active {
+    filter: invert(90%); /* noir -> blanc */
+    transition-duration: 0.1s;
+}
+
+#anecdote-en_savoir_plus {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    font-weight: bold;
+}
