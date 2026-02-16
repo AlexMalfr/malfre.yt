@@ -1,0 +1,8 @@
+# Reversing the .gitignore file because I have a lot of files that I don't want to put in the repository
+*
+!/index.html
+!/sources/
+!/sources/**
+!/.gitignore
+!/start-server.bat
+!/README.md
