@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Alexandre MALFREYT | Portfolio</title>
-    <meta name="description" content="Étudiant en informatique à l'IUT d'Orsay (2022-)">
+    <meta name="description" content="Site web personnel de Alexandre MALFREYT. Passionné de nouvelles technologies, étudiant en informatique à Polytech Paris-Saclay, apprenti au Synchrotron SOLEIL"/>
     <meta name="author" content="Alexandre MALFREYT">
 
     <meta property="og:title" content="Alexandre MALFREYT">
@@ -33,7 +33,7 @@
         <div class="liens"><ul>
             <!-- Twitter -->
             <li>
-                <a href="https://www.twitter.com/AlexZeGamer" title="Twitter">
+                <a href="https://www.twitter.com/AlexMalfr" title="Twitter">
                     <img class="social-icon icon" src="./sources/images/icons/twitter.svg" alt="Twitter"/>
                 </a>
             </li>
@@ -63,6 +63,13 @@
             <li>
                 <a href="https://play.google.com/store/apps/dev?id=5121796651002435647" title="Google Play Store">
                     <img class="social-icon icon" src="./sources/images/icons/playstore.svg" alt="Google Play Store"/>
+                </a>
+            </li>
+            
+            <!-- Threads -->
+            <li>
+                <a href="https://www.threads.net/@alex.malfreyt" title="Threads">
+                    <img class="social-icon icon" src="./sources/images/icons/threads.svg" alt="Threads"/>
                 </a>
             </li>
             
@@ -179,7 +186,6 @@
                 <div class="dropdown-content">
                     <a class="dropdown-item" href="https://www.paypal.me/AMalfreyt" title="Paypal"><img src="./sources/images/icons/paypal.svg" alt="Paypal"/></a>
                     <a class="dropdown-item" href="https://revolut.me/amalfreyt" title="Revolut"><img src="./sources/images/icons/revolut.svg" alt="Revolut"/></a>
-                    <a class="dropdown-item" href="https://lydia-app.com/p/alexandre.malfreyt" title="Lydia"><img src="./sources/images/icons/lydia.svg" alt="Lydia"/></a>
                     <input class="dropdown-item" type="image" title="Bitcoin" onclick="copy('3DrMc8bs6vqu2VPY3T5L7DciXFkh4UQXHE')" src="./sources/images/icons/bitcoin.svg" alt="Bitcoin"/>
                     <input class="dropdown-item" type="image" title="Ethereum" onclick="copy('0x4d1F50E3f206A0008Dab099CF4705075A01cf534')" src="./sources/images/icons/ethereum.svg" alt="Ethereum"/>
                 </div>
@@ -197,30 +203,36 @@
         </ul></div>
     </header>
 
-    <section>
-        
+    <section id="aboutme-section">
         <!-- À propos de moi -->
         <h2 id="aboutme">À propos de moi</h2>
               
         <div id="aboutme-div">
+            <img id="aboutme-photo" src="./sources/images/photo.png" alt="Photo de Alexandre MALFREYT" />
+            <div id="aboutme-text">
             <ul>
                 <li id="aboutme-age">... ans</li>
-                <li>Étudiant à l'<a href="https://www.iut-orsay.universite-paris-saclay.fr/">IUT d'Orsay</a>
+                    <li>Étudiant à <a href="https://www.polytech.universite-paris-saclay.fr/">Polytech Paris-Saclay</a>
                     (<a href="https://www.universite-paris-saclay.fr/">Université Paris-Saclay</a>)
-                    (2022-)
+                        (2024-2027) 🎓</li>
                 </li>
-                <li>Passionné de nouvelles technologies</li>
+                    <li>Apprenti au <a href="https://www.synchrotron-soleil.fr/">Synchrotron SOLEIL</a> (2024-2027) ☀️</li>
+                    <li>Passionné de nouvelles technologies ! 👨‍💻</li>
             </ul>
-        </div>
-
         <div class="buttons">
-            <a href="https://www.linkedin.com/in/alexandre-malfreyt/" class="button" title="Mon LinkedIn">Mon LinkedIn</a>
-            <a href="https://www.github.com/AlexZeGamer" class="button" title="Mon GitHub">Mon GitHub</a>
+                    <div class="button-row">
+                        <a href="https://www.linkedin.com/in/alexandre-malfreyt/" class="button" title="Mon LinkedIn">Mon
+                            LinkedIn</a>
+                        <a href="https://www.github.com/AlexMalfr" class="button" title="Mon GitHub">Mon GitHub</a>
         </div>
-        <div class="buttons">
+                    <div class="button-row">
             <a href="./cv" class="button" title="Mon CV">Mon CV</a>
-            <a href="./cv/archives">Archives</a>
+                        <a href="./cv/archives" class="link">Archives</a>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
 
         <!-- Projets -->
@@ -247,7 +259,6 @@
 
     <footer>
         <p>Made with ❤️ by Alexandre Malfreyt (<i>& GitHub Copilot</i> 😉)</p>
-        <p>Copyright © 2023 Alexandre Malfreyt</p>
     </footer>
 </body>
 

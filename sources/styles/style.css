@@ -26,6 +26,12 @@ header > *, footer > * { margin: 30px 0; } /* Pour éviter que le contenu ne soi
 @media (max-width: 700px) {
     /* Pour éviter que le titre ne soit collé au menu */
     header h1 { margin-top: 50px; }
+
+    header, footer {
+        padding: 20px;
+    }
+
+    header > *, footer > * { margin: 15px 0; }
 }
 
 h2 {
@@ -140,6 +146,7 @@ input[type='url']:hover {
 .social-icon {
     margin-inline: 3px;
     width: 30px;
+    max-height: 30px;
     filter: invert(80%);
     transition-property: transform, filter, margin-inline;
     transition-duration: 1s;
@@ -154,13 +161,13 @@ input[type='url']:hover {
     transition-timing-function: ease-in-out;
 }
 
-@media (max-width: 700px) {
-    /* Pour éviter que les icônes ne soient trop petites sur mobile */
-    .social-icon {
+/* Si l'écran est trop petit pour afficher toutes les icônes sur une seule ligne */
+/* On les espaces suffisemment pour eviter qu'elles ne se poussent d'une ligne sur l'autre au hover en s'agrandissant */
+/* Cela permet aussi de plus facilement les selectionner sur mobile */
+.liens.multi-line .social-icon {
         margin-inline: 5px;
         width: 35px;
     }
-}
 
 
 /* Menus déroulants */
@@ -224,38 +231,105 @@ input[type='url']:hover {
 
 /* Section "à propos de moi" */
 #aboutme-div {
+    display: flex;
     margin: 0 auto;
     width: fit-content;
+    max-width: 100%;
+    gap: 30px;
+}
+
+#aboutme-photo {
+    max-height: 150px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 20px;
+}
+
+#aboutme-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+#aboutme-div ul {
+    margin: 0;
+    padding: 0;
 }
 
 #aboutme-div ul li {
     text-align: left;
-    list-style: "➜";
+    list-style: none;
     position: relative;
-    padding-left: 10px;
+    padding-left: 20px;
+}
+
+#aboutme-div ul li::before {
+    /* Replace the default bullet point (::marker) by a :before pseudo-element to align the bullet point with the text */
+    content: "➜";
+    position: absolute;
+    left: 0;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* margin-top: 20px; */
+    align-items: flex-start;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
 }
 
 /* Boutons "Mon LinkedIn" et "Mon CV" */
 .button {
     display: inline-block;
-    margin: 10px;
-    padding: 10px 30px;
+    padding: 8px 30px;
     border-radius: 0;
+    font-weight: bold;
+    text-decoration: none;
+    
     border: 2px solid #000;
     background-color: none;
     color: #000;
-    font-weight: bold;
-    text-decoration: none;
-}
 
-.button:hover {
-    background-color: #000;
-    color: #FFF;
     transition-property: background-color, color;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;
 }
 
+.button:hover {
+    background-color: #000;
+    color: #FFF;
+}
+
+.buttons .link {
+    text-align: center;
+    padding: 10px;
+}
+
+@media (max-width: 700px) {
+    #aboutme-div {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    #aboutme-photo {
+        max-height: 120px;
+    }
+
+    #aboutme-text {
+        width: 100%;
+    }
+
+    .button-row {
+        flex-wrap: wrap;
+    }
+}
 
 
 /* Section "Mes projets" */
@@ -263,7 +337,8 @@ input[type='url']:hover {
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-block: 15px;
+    margin-top: -20px;
+    padding-block: 25px;
     padding-inline: 10px;
 }
 
@@ -296,7 +371,7 @@ input[type='url']:hover {
 
 .project-div .project-thumbnail {
     width: 100%;
-    height: auto;
+    aspect-ratio: 4/3;
     object-fit: cover;
     border-radius: 10px;
 }
@@ -388,6 +463,7 @@ input[type='url']:hover {
     }
 
     #anecdote-div {
+        width: 80%;
         padding-inline: 30px;
     }
 }

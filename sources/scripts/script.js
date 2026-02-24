@@ -1,3 +1,5 @@
+/* ---------- UTILS ---------- */
+
 function copy(text) {
     if (window.confirm(text + "\nCopier dans le presse papier ?")) {
         var elem = document.createElement("textarea");
@@ -8,6 +10,201 @@ function copy(text) {
         document.body.removeChild(elem);
     }
 }
+
+function humanizeDuration(nbSeconds) {
+    var seconds = nbSeconds % 60;
+    var minutes = Math.floor(nbSeconds / 60) % 60;
+    var hours = Math.floor(nbSeconds / 60 / 60) % 24;
+    var days = Math.floor(nbSeconds / 60 / 60 / 24) % 30;
+    var months = Math.floor(nbSeconds / 60 / 60 / 24 / 30) % 12;
+    var years = Math.floor(nbSeconds / 60 / 60 / 24 / 30 / 12);
+
+    var humanized = '';
+
+    if (years > 0) humanized += ' ' + years + ' an' + (years > 1 ? 's' : '');
+    if (months > 0) humanized += ' ' + months + ' mois';
+    if (days > 0) humanized += ' ' + days + ' jour' + (days > 1 ? 's' : '');
+    if (hours > 0) humanized += ' ' + hours + ' heure' + (hours > 1 ? 's' : '');
+    if (minutes > 0) humanized += ' ' + minutes + ' minute' + (minutes > 1 ? 's' : '');
+    if (seconds > 0) humanized += ' ' + seconds + ' seconde' + (seconds > 1 ? 's' : '');
+
+    return humanized;
+}
+
+
+/* ---------- HEADER ---------- */
+
+function checkHeaderIconsOverflow() {
+    /* Check if the line of icons in the header overflows into multiple lines
+    and add a class to the parent element if it does */
+
+    const container = document.querySelector('.liens ul');
+
+    const originalWhiteSpace = container.style.whiteSpace;
+
+    // Temporarily set white-space to nowrap to measure height of one line
+    container.style.whiteSpace = 'nowrap';
+    const oneLineHeight = container.scrollHeight;
+
+    // Temporarily set white-space to normal to measure total height
+    container.style.whiteSpace = 'normal';
+    const totalHeight = container.scrollHeight;
+
+    // Revert white-space to its original value
+    container.style.whiteSpace = originalWhiteSpace;
+
+    // If height increased, it means the content overflowed into multiple lines
+    if (totalHeight > oneLineHeight) {
+        container.parentNode.classList.add('multi-line');
+        console.log('multi-line');
+    } else {
+        container.parentNode.classList.remove('multi-line');
+        console.log('single-line');
+    }
+}
+
+// Check if header icons overflow on page load and on resize
+document.addEventListener('DOMContentLoaded', checkHeaderIconsOverflow);
+window.addEventListener('resize', checkHeaderIconsOverflow);
+
+
+/* ---------- ABOUT ME SECTION ---------- */
+
+function getAge() {
+    let now = new Date();
+    let birth = new Date(2003, 1, 26); // 2003-02-26 (mois de 0 à 11)
+    var age_dt = new Date(now - birth);
+
+    let age = Math.abs(age_dt.getFullYear() - 1970);
+
+    let birthday = now.getMonth() === birth.getMonth() && now.getDate() === birth.getDate();
+    let birthdayText = birthday ? ` <b>(C'est mon anniversaire ! 🎂🥳)</b>` : "";
+
+    document.getElementById('aboutme-age').innerHTML = `${age} ans${birthdayText}`;
+}
+
+getAge();
+
+
+/* ---------- PROJECTS SECTION ---------- */
+
+document.addEventListener("DOMContentLoaded", getProjects);
+
+function getProjects() {
+    fetchProjectsData()
+        .then(projects => {
+            const projectsDiv = document.getElementById('projects-timeline');
+            projects.forEach(project => {
+                const projectElement = createProjectElement(project);
+                projectsDiv.appendChild(projectElement);
+            });
+            removeLoadingDiv();
+            scrollToLastProject();
+        })
+        .catch(error => console.error('Error fetching projects data:', error));
+}
+
+function fetchProjectsData() {
+    return new Promise((resolve, reject) => {
+        let fileURL = "./sources/data/projects.json";
+        let request = new XMLHttpRequest();
+        request.open('GET', fileURL);
+        request.responseType = 'json';
+        request.onload = () => resolve(request.response);
+        request.onerror = () => reject(request.statusText);
+        request.send();
+    });
+}
+
+function createProjectElement(project) {
+    const a = document.createElement('a');
+    a.setAttribute('href', project['Lien']);
+
+    const div = document.createElement('div');
+    div.classList.add('project-div', 'block');
+    a.appendChild(div);
+
+    const img = document.createElement('img');
+    img.setAttribute('src', project['Thumbnail']);
+    img.classList.add('project-thumbnail');
+    div.appendChild(img);
+
+    const title = document.createElement('h3');
+    title.classList.add('project-title');
+    title.appendChild(document.createTextNode(project['Name']));
+    div.appendChild(title);
+
+    const date = document.createElement('p');
+    date.classList.add('project-date');
+    date.appendChild(document.createTextNode(project['Année']));
+    div.appendChild(date);
+
+    const description = document.createElement('p');
+    description.classList.add('project-description');
+    description.appendChild(document.createTextNode(project['Description']));
+    div.appendChild(description);
+
+    if (project.hasOwnProperty('Interets') && project['Interets'].length > 0) {
+        const interestsTitle = document.createElement('h4');
+        interestsTitle.classList.add('project-interests-title');
+        interestsTitle.appendChild(document.createTextNode('Intérêts principaux'));
+        div.appendChild(interestsTitle);
+
+        const interests = document.createElement('ul');
+        project['Interets'].forEach(interest => {
+            const interestItem = document.createElement('li');
+            interestItem.classList.add('project-interest');
+            interestItem.appendChild(document.createTextNode(interest));
+            interests.appendChild(interestItem);
+        });
+        interests.classList.add('project-interests');
+        div.appendChild(interests);
+    }
+
+    const tags = document.createElement('div');
+    project['Tags'].forEach(tag => {
+        const tagSpan = document.createElement('span');
+        tagSpan.classList.add('project-tag');
+        tagSpan.appendChild(document.createTextNode(tag));
+        tags.appendChild(tagSpan);
+    });
+    tags.classList.add('project-tags');
+    div.appendChild(tags);
+
+    return a;
+}
+
+function removeLoadingDiv() {
+    const loadingDiv = document.getElementById('projects-loading');
+    if (loadingDiv) {
+        loadingDiv.remove();
+    }
+}
+
+function scrollToLastProject() {
+    const projectsDiv = document.getElementById('projects-timeline');
+    projectsDiv.scrollLeft = projectsDiv.scrollWidth;
+    updateScrollGradients();
+}
+
+function updateScrollGradients() {
+    const timeline = document.getElementById('projects-timeline');
+    const wrapper = document.getElementById('projects-timeline-wrapper');
+    if (!wrapper) return;
+    const atLeft = timeline.scrollLeft <= 0;
+    const atRight = timeline.scrollLeft >= timeline.scrollWidth - timeline.clientWidth - 1;
+    wrapper.classList.toggle('has-left-overflow', !atLeft);
+    wrapper.classList.toggle('has-right-overflow', !atRight);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('projects-timeline').addEventListener('scroll', updateScrollGradients);
+});
+
+window.addEventListener('resize', scrollToLastProject);
+
+
+/* ---------- ANECDOTES SECTION ---------- */
 
 function getAnecdote() {
     // Get anecdotes from JSON file
@@ -47,134 +244,3 @@ function getAnecdote() {
 }
 
 getAnecdote();
-
-
-function getAge() {
-    let now = new Date();
-    let birth = new Date(2003, 2, 26);
-    var age_dt = new Date(now-birth);
-
-    let age = Math.abs(age_dt.getFullYear() - 1970);
-
-    document.getElementById('aboutme-age').innerHTML = `${age} ans`;
-}
-
-getAge();
-
-
-function getProjects() {
-    // Get projects from JSON file
-    let fileURL = "./sources/data/projects.json";
-    let request = new XMLHttpRequest();
-    request.open('GET', fileURL);
-    request.responseType = 'json';
-    request.send();
-
-    request.onload = function () {
-        // Create div for each project
-        for (let i = 0; i < request.response.length; i++) {
-            let projects_div = document.getElementById('projects-timeline');
-
-            // Create a link
-            var a = document.createElement('a');
-            a.setAttribute('href', request.response[i]['Lien']);
-
-            // Create div
-            var div = document.createElement('div');
-            div.classList.add('project-div')
-            div.classList.add('block')
-
-            a.appendChild(div);
-
-            // Add an image
-            var img = document.createElement('img');
-            img.setAttribute('src', request.response[i]['Thumbnail']);
-            img.classList.add('project-thumbnail');
-            div.appendChild(img);
-            
-            // Add a title which is a link
-            var title = document.createElement('h3');
-            var name = document.createTextNode(request.response[i]['Name']);
-            title.classList.add('project-title');
-            title.appendChild(name);
-            div.appendChild(title);
-
-            // Add a date
-            var date = document.createElement('p');
-            var date_text = document.createTextNode(request.response[i]['Année']);
-            date.appendChild(date_text);
-            date.classList.add('project-date');
-            div.appendChild(date);
-            
-            // Add a description (take into account newlines)
-            var description = document.createElement('p');
-            var description_text = document.createTextNode(request.response[i]['Description']);
-            description.appendChild(description_text);
-            
-            description.classList.add('project-description');
-            div.appendChild(description);
-
-            // Add "interets principaux"
-            if (request.response[i].hasOwnProperty('Interets')) {
-                // title for interests
-                var interests_title = document.createElement('h4');
-                var interests_title_text = document.createTextNode('Intérêts principaux');
-                interests_title.appendChild(interests_title_text);
-                interests_title.classList.add('project-interests-title');
-                div.appendChild(interests_title);
-
-                // interests
-                var interests = document.createElement('ul');
-                for (let j = 0; j < request.response[i]['Interets'].length; j++) {
-                    var interest = document.createElement('li');
-                    var interest_text = document.createTextNode(request.response[i]['Interets'][j]);
-                    interest.appendChild(interest_text);
-                    interest.classList.add('project-interest');
-                    interests.appendChild(interest);
-                }
-                interests.classList.add('project-interests');
-                div.appendChild(interests);
-            }
-
-            // Add tags
-            var tags = document.createElement('div');
-            for (let j = 0; j < request.response[i]['Tags'].length; j++) {
-                var tag = document.createElement('span');
-                var tag_text = document.createTextNode(request.response[i]['Tags'][j]);
-                tag.appendChild(tag_text);
-                tag.classList.add('project-tag');
-                tags.appendChild(tag);
-            }
-            tags.classList.add('project-tags');
-            div.appendChild(tags);
-            
-            projects_div.appendChild(a);
-        }
-
-        // Remove loading div
-        document.getElementById('projects-loading').remove();
-    }
-}
-
-getProjects();
-
-
-function humanizeDuration(nbSeconds) {
-    var seconds = nbSeconds % 60;
-    var minutes = Math.floor(nbSeconds / 60) % 60;
-    var hours = Math.floor(nbSeconds / 60 / 60) % 24;
-    var days = Math.floor(nbSeconds / 60 / 60 / 24) % 30;
-    var months = Math.floor(nbSeconds / 60 / 60 / 24 / 30) % 12;
-    var years = Math.floor(nbSeconds / 60 / 60 / 24 / 30 / 12);
-
-    var humanized = '';
-
-    if (years > 0)   humanized += ' ' + years + ' an' + (years > 1 ? 's' : '');
-    if (months > 0)  humanized += ' ' + months + ' mois';
-    if (days > 0)    humanized += ' ' + days + ' jour' + (days > 1 ? 's' : '');
-    if (hours > 0)   humanized += ' ' + hours + ' heure' + (hours > 1 ? 's' : '');
-    if (minutes > 0) humanized += ' ' + minutes + ' minute' + (minutes > 1 ? 's' : '');
-    if (seconds > 0) humanized += ' ' + seconds + ' seconde' + (seconds > 1 ? 's' : '');
-
-    return humanized;
-}
