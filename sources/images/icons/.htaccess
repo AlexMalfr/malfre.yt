@@ -1,0 +1,3 @@
+<FilesMatch "\.svg$">
+  Header set X-Robots-Tag "noindex"
+</FilesMatch>
