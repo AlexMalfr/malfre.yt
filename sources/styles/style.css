@@ -1,6 +1,56 @@
 @import "https://www.malfre.yt/sources/global.css";
 
 
+/* Translate banner */
+#translate-banner {
+    display: none; /* shown by JS when needed */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 50px;
+    background-color: #1a73e8;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    font-size: 0.9em;
+    position: relative;
+    text-align: center;
+}
+
+#translate-banner-link {
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+#translate-banner-link:hover {
+    color: rgba(255, 255, 255, 0.8);
+    transition-property: color;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+}
+
+#translate-banner-close {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1em;
+    cursor: url("../images/cursors/cursor_hover.svg"), pointer;
+    padding: 0 6px;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+#translate-banner-close:hover {
+    opacity: 1;
+}
+
+
 /* Body, header, footer */
 body {
     cursor: url("../images/cursors/cursor.svg"), auto;
@@ -105,8 +155,9 @@ input[type='url']:hover {
 /* Menu */
 #homebutton, #translate-btn {
     position: absolute;
-    top: 0;
+    top: var(--banner-height, 0px);
     margin: 30px;
+    transition: top 0.2s ease;
 }
 
 #homebutton { left: 0; }

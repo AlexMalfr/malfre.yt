@@ -52,6 +52,54 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+/* ---------- TRANSLATE BANNER ---------- */
+
+async function initTranslateBanner() {
+    // Don't show if already on a translated page
+    if (window.location.hostname.endsWith('.translate.goog')) return;
+
+    // Don't show if user previously dismissed it
+    if (localStorage.getItem('translate-banner-dismissed') === '1') return;
+
+    const lang = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+    const langCode = lang.split('-')[0];
+
+    // Don't show if user's language is already French
+    if (langCode === 'fr') return;
+
+    const banner = document.getElementById('translate-banner');
+    const link = document.getElementById('translate-banner-link');
+    if (!banner || !link) return;
+
+    // Build the Google Translate link for the user's language
+    link.href = `https://translate.google.com/translate?sl=fr&tl=${encodeURIComponent(langCode)}&u=${encodeURIComponent('http://alexandre.malfre.yt/')}`;
+
+    // Translate the banner text via the free Google Translate API
+    const sourceFr = 'Cette page est en français — Cliquer ici pour la traduire automatiquement (via Google Traduction)';
+    try {
+        const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=${encodeURIComponent(langCode)}&dt=t&q=${encodeURIComponent(sourceFr)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const translated = data[0].map(chunk => chunk[0]).join('');
+        link.textContent = translated;
+    } catch (e) {
+        // Fallback: show the French text as-is
+        link.textContent = sourceFr;
+    }
+
+    document.getElementById('translate-banner-close').addEventListener('click', function () {
+        banner.style.display = 'none';
+        document.documentElement.style.setProperty('--banner-height', '0px');
+        localStorage.setItem('translate-banner-dismissed', '1');
+    });
+
+    banner.style.display = 'flex';
+    document.documentElement.style.setProperty('--banner-height', banner.offsetHeight + 'px');
+}
+
+document.addEventListener('DOMContentLoaded', initTranslateBanner);
+
+
 function checkHeaderIconsOverflow() {
     /* Check if the line of icons in the header overflows into multiple lines
     and add a class to the parent element if it does */
