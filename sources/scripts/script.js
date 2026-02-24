@@ -34,6 +34,24 @@ function humanizeDuration(nbSeconds) {
 
 /* ---------- HEADER ---------- */
 
+// Set translate link target language based on user's browser language
+// Hide the button if the page is already being viewed through Google Translate
+document.addEventListener('DOMContentLoaded', function () {
+    const translateLink = document.getElementById('translate-btn');
+    if (translateLink) {
+        if (window.location.hostname.endsWith('.translate.goog')) {
+            translateLink.style.display = 'none';
+        } else {
+            const lang = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+            const langCode = lang.split('-')[0];
+            const targetLang = langCode === 'fr' ? 'en' : langCode;
+            const url = new URL(translateLink.href);
+            url.searchParams.set('tl', targetLang);
+            translateLink.href = url.toString();
+        }
+    }
+});
+
 function checkHeaderIconsOverflow() {
     /* Check if the line of icons in the header overflows into multiple lines
     and add a class to the parent element if it does */

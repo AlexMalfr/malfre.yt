@@ -103,22 +103,22 @@ input[type='url']:hover {
 
 
 /* Menu */
-#homebutton, #en {
+#homebutton, #translate-btn {
     position: absolute;
     top: 0;
     margin: 30px;
 }
 
 #homebutton { left: 0; }
-#en { right: 0; }
+#translate-btn { right: 0; }
 
-#homebutton img, #en img {
+#homebutton img, #translate-btn img {
     height: 30px;
     transition-property: height, filter;
     transition-duration: 0.5s;
 }
 
-#homebutton img:hover, #en img:hover {
+#homebutton img:hover, #translate-btn img:hover {
     height: 35px;
     transition-duration: 1.5s;
 }
