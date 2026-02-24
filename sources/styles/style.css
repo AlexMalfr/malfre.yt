@@ -303,6 +303,12 @@ input[type='url']:hover {
     gap: 30px;
 }
 
+#aboutme-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 #aboutme-div ul {
     margin: 0;
     padding: 0;
@@ -320,6 +326,60 @@ input[type='url']:hover {
     content: "➜";
     position: absolute;
     left: 0;
+}
+
+#aboutme-name {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Name text and TTS button always stay on the same line */
+#name-and-btn {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 2px;
+}
+
+#name-tts-btn {
+    background: none;
+    border: none;
+    padding: 0 2px;
+    font-size: 1em;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: url("../images/cursors/cursor_hover.svg"), pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+#name-tts-btn:hover {
+    opacity: 1;
+}
+
+/* IPA collapses to 0 width when not hovered — takes no space */
+#name-ipa {
+    display: inline-block;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    font-size: 0.8em;
+    font-weight: normal;
+    font-style: italic;
+    color: #888;
+    transition: max-width 0.35s ease, opacity 0.25s ease;
+    pointer-events: none;
+    vertical-align: middle;
+}
+
+#aboutme-name:hover #name-ipa {
+    max-width: 20em;
+    opacity: 1;
 }
 
 .buttons {
