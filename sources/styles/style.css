@@ -103,7 +103,7 @@ input[type='url']:hover {
 
 
 /* Menu */
-#homebutton, #en { 
+#homebutton, #en {
     position: absolute;
     top: 0;
     margin: 30px;
@@ -165,9 +165,9 @@ input[type='url']:hover {
 /* On les espaces suffisemment pour eviter qu'elles ne se poussent d'une ligne sur l'autre au hover en s'agrandissant */
 /* Cela permet aussi de plus facilement les selectionner sur mobile */
 .liens.multi-line .social-icon {
-        margin-inline: 5px;
-        width: 35px;
-    }
+    margin-inline: 5px;
+    width: 35px;
+}
 
 
 /* Menus déroulants */
@@ -295,7 +295,7 @@ input[type='url']:hover {
     border: 2px solid #000;
     background-color: none;
     color: #000;
-
+    
     transition-property: background-color, color;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;
@@ -357,6 +357,20 @@ input[type='url']:hover {
     transition-duration: 0.5s;
     transition-timing-function: ease-out;
     transform: scale(1.05);
+}
+
+/* Sur un écran peu large, on affiche les projets sur toute la largeur */
+@media (max-width: 1100px) {
+    #projects-section {
+        margin-inline: 0;
+        max-width: 100%;
+    }
+    #projects-timeline-wrapper { max-width: 100%; }
+    #projects-timeline { max-width: 100%; }
+    /* add margin-inline to scrollbar only */
+    #projects-timeline::-webkit-scrollbar-track {
+        margin-inline: 10px;
+    }
 }
 
 /* Projet */
@@ -441,6 +455,39 @@ input[type='url']:hover {
     #projects-timeline::-webkit-scrollbar-thumb {
         border-radius: 20px;
     }
+}
+
+/* Gradients de débordement */
+#projects-timeline-wrapper {
+    position: relative;
+}
+
+#projects-timeline-wrapper::before,
+#projects-timeline-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#projects-timeline-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, white, transparent);
+}
+
+#projects-timeline-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, white, transparent);
+}
+
+#projects-timeline-wrapper.has-left-overflow::before,
+#projects-timeline-wrapper.has-right-overflow::after {
+    opacity: 1;
 }
 
 

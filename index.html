@@ -65,7 +65,7 @@
                     <img class="social-icon icon" src="./sources/images/icons/playstore.svg" alt="Google Play Store"/>
                 </a>
             </li>
-            
+
             <!-- Threads -->
             <li>
                 <a href="https://www.threads.net/@alex.malfreyt" title="Threads">
@@ -206,27 +206,27 @@
     <section id="aboutme-section">
         <!-- À propos de moi -->
         <h2 id="aboutme">À propos de moi</h2>
-              
+    
         <div id="aboutme-div">
             <img id="aboutme-photo" src="./sources/images/photo.png" alt="Photo de Alexandre MALFREYT" />
             <div id="aboutme-text">
-            <ul>
-                <li id="aboutme-age">... ans</li>
+                <ul>
+                    <li id="aboutme-age">... ans</li>
                     <li>Étudiant à <a href="https://www.polytech.universite-paris-saclay.fr/">Polytech Paris-Saclay</a>
-                    (<a href="https://www.universite-paris-saclay.fr/">Université Paris-Saclay</a>)
+                        (<a href="https://www.universite-paris-saclay.fr/">Université Paris-Saclay</a>)
                         (2024-2027) 🎓</li>
-                </li>
+                    </li>
                     <li>Apprenti au <a href="https://www.synchrotron-soleil.fr/">Synchrotron SOLEIL</a> (2024-2027) ☀️</li>
                     <li>Passionné de nouvelles technologies ! 👨‍💻</li>
-            </ul>
-        <div class="buttons">
+                </ul>
+                <div class="buttons">
                     <div class="button-row">
                         <a href="https://www.linkedin.com/in/alexandre-malfreyt/" class="button" title="Mon LinkedIn">Mon
                             LinkedIn</a>
                         <a href="https://www.github.com/AlexMalfr" class="button" title="Mon GitHub">Mon GitHub</a>
-        </div>
+                    </div>
                     <div class="button-row">
-            <a href="./cv" class="button" title="Mon CV">Mon CV</a>
+                        <a href="./cv" class="button" title="Mon CV">Mon CV</a>
                         <a href="./cv/archives" class="link">Archives</a>
                     </div>
                 </div>
@@ -234,15 +234,18 @@
         </div>
     </section>
 
-
+    <section id="projects-section">
         <!-- Projets -->
         <h2 id="projects">Mes projets</h2>
-        <div id="projects-timeline">
-            <!-- Les projets sont générés par le script JS -->
-            <p id="projects-loading" class="block">Chargement en cours...</p>
+        <div id="projects-timeline-wrapper">
+            <div id="projects-timeline">
+                <!-- Les projets sont générés par le script JS -->
+                <p id="projects-loading" class="block">Chargement en cours...</p>
+            </div>
         </div>
-        
+    </section>
 
+    <section id="anecdote-section">
         <!-- Anecdote -->
         <h2 id="anecdote">Une anecdote aléatoire sur moi</h2>
         <div id="anecdote-div" class="block" onload="getAnecdote()">
