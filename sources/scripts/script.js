@@ -219,8 +219,41 @@ function getProjects() {
 
             removeLoadingDiv();
             scrollToLastProject();
+            injectProjectImagesJsonLd(projects);
         })
         .catch(error => console.error('Error fetching projects data:', error));
+}
+
+function injectProjectImagesJsonLd(projects) {
+    const baseUrl = 'https://alexandre.malfre.yt';
+    const creator = {
+        "@type": "Person",
+        "@id": "https://alexandre.malfre.yt/#person",
+        "name": "Alexandre MALFREYT"
+    };
+
+    const toAbsolute = src =>
+        src.startsWith('http') ? src : baseUrl + src.replace(/^\./, '');
+
+    const imageObjects = projects.map(project => ({
+        "@type": "ImageObject",
+        "contentUrl": toAbsolute(project['Thumbnail']),
+        "name": project['Name'],
+        "description": project['Description'],
+        "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "acquireLicensePage": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "creditText": "Alexandre MALFREYT",
+        "copyrightNotice": "Alexandre MALFREYT",
+        "creator": creator
+    }));
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": imageObjects
+    });
+    document.head.appendChild(script);
 }
 
 function fetchProjectsData() {
@@ -245,6 +278,7 @@ function createProjectElement(project) {
 
     const img = document.createElement('img');
     img.setAttribute('src', project['Thumbnail']);
+    img.setAttribute('alt', project['Name']);
     img.classList.add('project-thumbnail');
     div.appendChild(img);
 
@@ -324,7 +358,8 @@ function removeLoadingDiv() {
 }
 
 function scrollToLastProject() {
-    // Scroll to the 2nd to last project (the last one is the "coming soon" project which is not interesting à scroll to at the initial load)
+    // Scroll to the 2nd to last element of projects timeline
+    // (the last one is the "coming soon" project which is not interesting à scroll to at the initial load)
     const projectsDiv = document.getElementById('projects-timeline');
     const lastProjectDiv = projectsDiv.querySelector('.project-div:last-child');
     if (lastProjectDiv) {
