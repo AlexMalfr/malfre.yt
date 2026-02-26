@@ -51,12 +51,10 @@ function humanizeDurationSeconds(nbSeconds, maxUnits = 6) {
         maxUnits--;
     }
 
-    console.log(`humanizeDurationSeconds: nbSeconds=${nbSeconds}, humanized='${humanized.trim()}'`);
     return humanized;
 }
 
 function humanizeDurationDays(nbDays, maxUnits = 2) {
-    console.log(`humanizeDurationDays: nbDays=${nbDays}, maxUnits=${maxUnits}`);
     return humanizeDurationSeconds(nbDays * 24 * 60 * 60, maxUnits);
 }
 
@@ -151,10 +149,8 @@ function checkHeaderIconsOverflow() {
     // If height increased, it means the content overflowed into multiple lines
     if (totalHeight > oneLineHeight) {
         container.parentNode.classList.add('multi-line');
-        console.log('multi-line');
     } else {
         container.parentNode.classList.remove('multi-line');
-        console.log('single-line');
     }
 }
 
@@ -214,7 +210,6 @@ function getProjects() {
                     const projectElement = createProjectElement(project);
                     projectsDiv.appendChild(projectElement);
                 } catch (error) {
-                    console.error('Error creating project element:', error, project);
                 }
             });
 
@@ -226,7 +221,6 @@ function getProjects() {
             injectProjectImagesJsonLd(projects);
         })
         .catch(error => {
-            console.error('Error fetching projects data:', error);
             const loadingDiv = document.getElementById('projects-loading');
             if (loadingDiv) {
                 loadingDiv.textContent = '❌ Erreur lors du chargement des projets.';
@@ -388,7 +382,6 @@ function scrollToLastProject() {
         const lastProjectWidth = lastProjectDiv.offsetWidth;
         // Scroll to : (width of pro)
         projectsDiv.scrollLeft = projectsDiv.scrollWidth - projectsDiv.clientWidth - lastProjectWidth; // scroll to the end minus the width of the last project to have the 2nd to last project at the end of the screen
-        console.log(`scrollToLastProject: lastProjectWidth=${lastProjectWidth}, scrollLeft=${projectsDiv.scrollLeft}, clientWidth=${projectsDiv.clientWidth}`);
     } else {
         // If there are no projects, scroll to the end of the div just in case
         projectsDiv.scrollLeft = projectsDiv.scrollWidth;
@@ -472,7 +465,6 @@ function getAnecdote() {
                 const date = new Date(dateStr);
                 const today = new Date();
                 const nbDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-                console.log(`Placeholder: ${placeholder}, Type: ${type}, Date: ${dateStr}, NbDays: ${nbDays}`);
                 if (type === 'days') {
                     resolvedText = resolvedText.replace(placeholder, nbDays);
                 } else if (type === 'timedelta_days_as_seconds_humanized') {
