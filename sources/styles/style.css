@@ -470,17 +470,24 @@ input[type='url']:hover {
     transform: scale(1.05);
 }
 
-/* Sur un écran peu large, on affiche les projets sur toute la largeur */
-@media (max-width: 1100px) {
+/* Sur les écrans de moins de 1300px, on affiche les projets sur toute la largeur */
+@media (max-width: 1300px) {
     #projects-section {
         margin-inline: 0;
         max-width: 100%;
     }
-    #projects-timeline-wrapper { max-width: 100%; }
     #projects-timeline { max-width: 100%; }
     /* add margin-inline to scrollbar only */
     #projects-timeline::-webkit-scrollbar-track {
         margin-inline: 10px;
+    }
+}
+
+/* Sur un écran moyennement large, on réduit légèrement la timeline */
+@media (min-width: 1100px) and (max-width: 1300px) {
+    #projects-timeline-wrapper {
+        max-width: 90%;
+        margin: 0 auto;
     }
 }
 
