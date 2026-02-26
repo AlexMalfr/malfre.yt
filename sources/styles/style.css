@@ -458,15 +458,10 @@ input[type='url']:hover {
     align-items: stretch;
     justify-content: center;
     text-decoration: none;
-    transition-property: transform;
-    transition-duration: 0.5s;
-    transition-timing-function: ease-out;
 }
 
-#projects-timeline a:hover {
-    transition-property: transform;
-    transition-duration: 0.5s;
-    transition-timing-function: ease-out;
+#projects-timeline a:hover .project-div:not(.coming-soon),
+#projects-timeline .project-div:not(.coming-soon):hover {
     transform: scale(1.05);
 }
 
@@ -498,6 +493,9 @@ input[type='url']:hover {
     max-width: 300px;
     min-height: 150px;
     margin: 0px 5px;
+    transition-property: transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
     padding: 10px;
 }
 
@@ -520,7 +518,7 @@ input[type='url']:hover {
 
 .project-div .project-description {
     white-space: pre-wrap;
-    text-align: justify;
+    text-align: left;
     margin: 15px;
 }
 
@@ -668,6 +666,10 @@ input[type='url']:hover {
     margin-inline: 15px;
     margin-block: 0;
     vertical-align: middle;
+}
+
+#anecdote-text {
+    text-align: left;
 }
 
 #refresh {

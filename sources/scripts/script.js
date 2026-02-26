@@ -210,8 +210,12 @@ function getProjects() {
         .then(projects => {
             const projectsDiv = document.getElementById('projects-timeline');
             projects.forEach(project => {
-                const projectElement = createProjectElement(project);
-                projectsDiv.appendChild(projectElement);
+                try {
+                    const projectElement = createProjectElement(project);
+                    projectsDiv.appendChild(projectElement);
+                } catch (error) {
+                    console.error('Error creating project element:', error, project);
+                }
             });
 
             const comingSoonElement = createComingSoonElement();
@@ -221,7 +225,13 @@ function getProjects() {
             scrollToLastProject();
             injectProjectImagesJsonLd(projects);
         })
-        .catch(error => console.error('Error fetching projects data:', error));
+        .catch(error => {
+            console.error('Error fetching projects data:', error);
+            const loadingDiv = document.getElementById('projects-loading');
+            if (loadingDiv) {
+                loadingDiv.textContent = '❌ Erreur lors du chargement des projets.';
+            }
+        });
 }
 
 function injectProjectImagesJsonLd(projects) {
@@ -237,9 +247,9 @@ function injectProjectImagesJsonLd(projects) {
 
     const imageObjects = projects.map(project => ({
         "@type": "ImageObject",
-        "contentUrl": toAbsolute(project['Thumbnail']),
-        "name": project['Name'],
-        "description": project['Description'],
+        "contentUrl": toAbsolute(project['thumbnail']),
+        "name": project['name'],
+        "description": project['description'],
         "license": "https://creativecommons.org/publicdomain/zero/1.0/",
         "acquireLicensePage": "https://creativecommons.org/publicdomain/zero/1.0/",
         "creditText": "Alexandre MALFREYT",
@@ -262,69 +272,81 @@ function fetchProjectsData() {
         let request = new XMLHttpRequest();
         request.open('GET', fileURL);
         request.responseType = 'json';
+        request.timeout = 10000;
         request.onload = () => resolve(request.response);
-        request.onerror = () => reject(request.statusText);
+        request.onerror = () => reject(request.statusText || 'Erreur réseau');
+        request.ontimeout = () => reject('Timeout');
         request.send();
     });
 }
 
 function createProjectElement(project) {
-    const a = document.createElement('a');
-    a.setAttribute('href', project['Lien']);
+    const url = project['url'] || null;
+    const thumbnail = project['thumbnail'] || '';
+    const name = project['name'] || '';
+    const year = project['year'] || '';
+    const description = project['description'] || '';
+    const interests = Array.isArray(project['interests']) ? project['interests'] : [];
+    const tags = Array.isArray(project['tags']) ? project['tags'] : [];
 
     const div = document.createElement('div');
     div.classList.add('project-div', 'block');
-    a.appendChild(div);
 
     const img = document.createElement('img');
-    img.setAttribute('src', project['Thumbnail']);
-    img.setAttribute('alt', project['Name']);
+    img.setAttribute('src', thumbnail);
+    img.setAttribute('alt', name);
     img.classList.add('project-thumbnail');
     div.appendChild(img);
 
     const title = document.createElement('h3');
     title.classList.add('project-title');
-    title.appendChild(document.createTextNode(project['Name']));
+    title.appendChild(document.createTextNode(name));
     div.appendChild(title);
 
     const date = document.createElement('p');
     date.classList.add('project-date');
-    date.appendChild(document.createTextNode(project['Année']));
+    date.appendChild(document.createTextNode(year));
     div.appendChild(date);
 
-    const description = document.createElement('p');
-    description.classList.add('project-description');
-    description.appendChild(document.createTextNode(project['Description']));
-    div.appendChild(description);
+    const descriptionEl = document.createElement('p');
+    descriptionEl.classList.add('project-description');
+    descriptionEl.appendChild(document.createTextNode(description));
+    div.appendChild(descriptionEl);
 
-    if (project.hasOwnProperty('Interets') && project['Interets'].length > 0) {
+    if (interests.length > 0) {
         const interestsTitle = document.createElement('h4');
         interestsTitle.classList.add('project-interests-title');
         interestsTitle.appendChild(document.createTextNode('Intérêts principaux'));
         div.appendChild(interestsTitle);
 
-        const interests = document.createElement('ul');
-        project['Interets'].forEach(interest => {
+        const interestsList = document.createElement('ul');
+        interests.forEach(interest => {
             const interestItem = document.createElement('li');
             interestItem.classList.add('project-interest');
             interestItem.appendChild(document.createTextNode(interest));
-            interests.appendChild(interestItem);
+            interestsList.appendChild(interestItem);
         });
-        interests.classList.add('project-interests');
-        div.appendChild(interests);
+        interestsList.classList.add('project-interests');
+        div.appendChild(interestsList);
     }
 
-    const tags = document.createElement('div');
-    project['Tags'].forEach(tag => {
+    const tagsDiv = document.createElement('div');
+    tags.forEach(tag => {
         const tagSpan = document.createElement('span');
         tagSpan.classList.add('project-tag');
         tagSpan.appendChild(document.createTextNode(tag));
-        tags.appendChild(tagSpan);
+        tagsDiv.appendChild(tagSpan);
     });
-    tags.classList.add('project-tags');
-    div.appendChild(tags);
+    tagsDiv.classList.add('project-tags');
+    div.appendChild(tagsDiv);
 
-    return a;
+    if (url) {
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.appendChild(div);
+        return a;
+    }
+    return div;
 }
 
 function createComingSoonElement() {
@@ -400,28 +422,50 @@ function getAnecdote() {
     let request = new XMLHttpRequest();
     request.open('GET', fileURL);
     request.responseType = 'json';
+    request.timeout = 10000;
     request.send();
 
+    function showAnecdoteError() {
+        document.getElementById('anecdote-emoji').innerHTML = '❌';
+        document.getElementById('anecdote-text').innerHTML = 'Erreur lors du chargement de l\'anecdote.';
+    }
+
+    request.onerror = showAnecdoteError;
+    request.ontimeout = showAnecdoteError;
+
     request.onload = function () {
+        if (!request.response || !Array.isArray(request.response) || request.response.length === 0) {
+            showAnecdoteError();
+            return;
+        }
+
         // Get currently displayed anecdote
         let current_anecdote = document.getElementById('anecdote-text').innerHTML;
 
         // Get random anecdote (not the same as the current one)
         let anecdote = null;
+        let attempts = 0;
         while (true) {
             let random_anecdote_id = Math.floor(Math.random() * request.response.length);
             anecdote = request.response[random_anecdote_id];
-            if (anecdote['text'] != current_anecdote) {
+            const text = anecdote['text'] || '';
+            if (text !== current_anecdote || ++attempts >= request.response.length) {
                 break;
             }
         }
+
+        const text = anecdote['text'] || '';
+        const emoji = anecdote['emoji'] || '❓';
+        const learnMoreUrl = anecdote['learn_more_url'] || null;
+        const learnMoreText = anecdote['learn_more_text'] || 'En savoir plus';
 
         // Replace placeholders : durations, dates, etc (dynamic content that needs to be up-to-date)
         // Format :
         // {days:ISO8601date} => number of days between the given date and today
         // {timedelta_days_as_seconds_humanized:ISO8601date} => humanized duration for 1 day = 1 second, 2 days = 2 seconds, ..., 1 year = 6 minutes and 5 days, etc
         // {timedelta_years_humanized:ISO8601date} => humanized duration between the given date and today (1 day, 2 days, 1 month, 1 year, etc) floored to the year
-        let datePlaceholders = anecdote['text'].match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/g);
+        let resolvedText = text;
+        let datePlaceholders = resolvedText.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/g);
         if (datePlaceholders) {
             datePlaceholders.forEach(placeholder => {
                 let [_, type, dateStr] = placeholder.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/);
@@ -430,20 +474,26 @@ function getAnecdote() {
                 const nbDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
                 console.log(`Placeholder: ${placeholder}, Type: ${type}, Date: ${dateStr}, NbDays: ${nbDays}`);
                 if (type === 'days') {
-                    anecdote['text'] = anecdote['text'].replace(placeholder, nbDays);
+                    resolvedText = resolvedText.replace(placeholder, nbDays);
                 } else if (type === 'timedelta_days_as_seconds_humanized') {
-                    anecdote['text'] = anecdote['text'].replace(placeholder, humanizeDurationSeconds(nbDays)); // use the number of days as a number of seconds - useful for 1SE duration calculation
+                    resolvedText = resolvedText.replace(placeholder, humanizeDurationSeconds(nbDays)); // use the number of days as a number of seconds - useful for 1SE duration calculation
                 } else if (type === 'timedelta_years_humanized') {
-                    anecdote['text'] = anecdote['text'].replace(placeholder, humanizeDurationDays(nbDays, 1)); // humanize the duration in years, floored to the year
+                    resolvedText = resolvedText.replace(placeholder, humanizeDurationDays(nbDays, 1)); // humanize the duration in years, floored to the year
                 }
             });
         }
 
         // Set anecdote
-        document.getElementById('anecdote-text').innerHTML = anecdote['text'];
-        document.getElementById('anecdote-emoji').innerHTML = anecdote['emoji'];
-        document.getElementById('anecdote-en_savoir_plus').setAttribute('href', anecdote['learn_more_url']);
-        document.getElementById('anecdote-en_savoir_plus').innerHTML = anecdote['learn_more_text'] || "En savoir plus";
+        document.getElementById('anecdote-text').innerHTML = resolvedText;
+        document.getElementById('anecdote-emoji').innerHTML = emoji;
+        const learnMoreEl = document.getElementById('anecdote-en_savoir_plus');
+        if (learnMoreUrl) {
+            learnMoreEl.setAttribute('href', learnMoreUrl);
+            learnMoreEl.innerHTML = learnMoreText;
+            learnMoreEl.style.display = '';
+        } else {
+            learnMoreEl.style.display = 'none';
+        }
     }
 }
 
