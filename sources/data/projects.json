@@ -14,7 +14,7 @@
       "Scratch"
     ],
     "Lien": "https://scratch.mit.edu/projects/282619937/",
-    "Thumbnail": "./sources/images/project-thumbnails/image1.gif"
+    "Thumbnail": "./sources/images/project-thumbnails/pac-tsi.gif"
   },
   {
     "Name": "Bot en Caoutchouc",
@@ -29,7 +29,26 @@
       "Python"
     ],
     "Lien": "https://top.gg/bot/657708468324532318",
-    "Thumbnail": "./sources/images/project-thumbnails/image2.gif"
+    "Thumbnail": "./sources/images/project-thumbnails/bot-en-caoutchouc.gif"
+  },
+  {
+    "Name": "Video Distort",
+    "Année": "2021",
+    "Description": "Un projet d'effet de distorsion vidéo en Python via un algorithme de Seam Carving (content-aware video resizing) et un effet de vibrato sur l'audio",
+    "Interets": [
+      "Effets visuels",
+      "Effets audio",
+      "Traitement d'images"
+    ],
+    "Tags": [
+      "Python",
+      "OpenCV",
+      "FFmpeg",
+      "Tkinter",
+      "ImageMagick"
+    ],
+    "Lien": "https://github.com/AlexMalfr/distort-video",
+    "Thumbnail": "./sources/images/project-thumbnails/video-distort.gif"
   },
   {
     "Name": "Portfolio",
@@ -45,7 +64,76 @@
       "Javascript"
     ],
     "Lien": "https://alexandre.malfre.yt/",
-    "Thumbnail": "./sources/images/project-thumbnails/image3.gif"
+    "Thumbnail": "./sources/images/project-thumbnails/portfolio.gif"
+  },
+  {
+    "Name": "SAT Sudoku Solver",
+    "Année": "2022",
+    "Description": "Un solveur de Sudoku en Python utilisant un solveur de SAT (Pycosat) avec une interface graphique en Tkinter",
+    "Interets": [
+      "Algorithmique",
+      "Programmation",
+      "IHM"
+    ],
+    "Tags": [
+      "Python",
+      "SAT Solving",
+      "Tkinter"
+    ],
+    "Lien": "https://github.com/AlexMalfr/sat-sudoku-solver",
+    "Thumbnail": "./sources/images/project-thumbnails/sudoku-solver.gif"
+  },
+  {
+    "Name": "Minesweeper Clone",
+    "Année": "2023",
+    "Description": "Un clone du jeu Démineur en C# (.NET/Windows Forms)",
+    "Interets": [
+      "IHM",
+      "Game Design"
+    ],
+    "Tags": [
+      "C#",
+      ".NET",
+      "Windows Forms"
+    ],
+    "Lien": "https://github.com/AlexMalfr/minesweeper",
+    "Thumbnail": "./sources/images/project-thumbnails/minesweeper.gif"
+  },
+  {
+    "Name": "Triominos Pizza",
+    "Année": "2023",
+    "Description": "Un projet de SI d'une pizzeria fictive avec un site web client et admin (Full-stack, PHP/JS/MySQL), une application desktop pour les pizzaiolo et une pour les livreurs (Java), et une application mobile pour les livreurs (Android).",
+    "Interets": [
+      "Full-stack",
+      "Design web",
+      "Développement d'applications desktop",
+      "Développement d'applications mobiles"
+    ],
+    "Tags": [
+      "PHP",
+      "Javascript",
+      "MySQL",
+      "Java",
+      "Android"
+    ],
+    "Lien": "https://alexandre.malfre.yt/projects/triominos",
+    "Thumbnail": "./sources/images/project-thumbnails/triominos.gif"
+  },
+  {
+    "Name": "CV Generator",
+    "Année": "2024",
+    "Description": "Un générateur de CV sous forme de page web, permettant d'afficher et d'exporter un CV en PDF à partir d'un fichier JSON",
+    "Interets": [
+      "Design web",
+      "Front-end"
+    ],
+    "Tags": [
+      "CSS",
+      "HTML",
+      "Javascript"
+    ],
+    "Lien": "https://github.com/AlexMalfr/cv-json-renderer",
+    "Thumbnail": "./sources/images/project-thumbnails/cv-generator.gif"
   },
   {
     "Name": "D'autres projets à venir...",
