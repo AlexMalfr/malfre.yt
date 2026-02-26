@@ -11,7 +11,12 @@ function copy(text) {
     }
 }
 
-function humanizeDuration(nbSeconds) {
+function humanizeDurationSeconds(nbSeconds, maxUnits = 6) {
+    /*
+    Convert a duration in seconds to a human-readable format, with a maximum number of units to display
+    (default: 6, which means display all units)
+    */
+
     var seconds = nbSeconds % 60;
     var minutes = Math.floor(nbSeconds / 60) % 60;
     var hours = Math.floor(nbSeconds / 60 / 60) % 24;
@@ -20,15 +25,39 @@ function humanizeDuration(nbSeconds) {
     var years = Math.floor(nbSeconds / 60 / 60 / 24 / 30 / 12);
 
     var humanized = '';
+    
+    if (years > 0 && maxUnits > 0) {
+        humanized += ' ' + years + ' an' + (years > 1 ? 's' : '');
+        maxUnits--;
+    }
+    if (months > 0 && maxUnits > 0) {
+        humanized += ' ' + months + ' mois';
+        maxUnits--;
+    }
+    if (days > 0 && maxUnits > 0) {
+        humanized += ' ' + days + ' jour' + (days > 1 ? 's' : '');
+        maxUnits--;
+    }
+    if (hours > 0 && maxUnits > 0) {
+        humanized += ' ' + hours + ' heure' + (hours > 1 ? 's' : '');
+        maxUnits--;
+    }
+    if (minutes > 0 && maxUnits > 0) {
+        humanized += ' ' + minutes + ' minute' + (minutes > 1 ? 's' : '');
+        maxUnits--;
+    }
+    if (seconds > 0 && maxUnits > 0) {
+        humanized += ' ' + seconds + ' seconde' + (seconds > 1 ? 's' : '');
+        maxUnits--;
+    }
 
-    if (years > 0) humanized += ' ' + years + ' an' + (years > 1 ? 's' : '');
-    if (months > 0) humanized += ' ' + months + ' mois';
-    if (days > 0) humanized += ' ' + days + ' jour' + (days > 1 ? 's' : '');
-    if (hours > 0) humanized += ' ' + hours + ' heure' + (hours > 1 ? 's' : '');
-    if (minutes > 0) humanized += ' ' + minutes + ' minute' + (minutes > 1 ? 's' : '');
-    if (seconds > 0) humanized += ' ' + seconds + ' seconde' + (seconds > 1 ? 's' : '');
-
+    console.log(`humanizeDurationSeconds: nbSeconds=${nbSeconds}, humanized='${humanized.trim()}'`);
     return humanized;
+}
+
+function humanizeDurationDays(nbDays, maxUnits = 2) {
+    console.log(`humanizeDurationDays: nbDays=${nbDays}, maxUnits=${maxUnits}`);
+    return humanizeDurationSeconds(nbDays * 24 * 60 * 60, maxUnits);
 }
 
 
@@ -309,23 +338,39 @@ function getAnecdote() {
         while (true) {
             let random_anecdote_id = Math.floor(Math.random() * request.response.length);
             anecdote = request.response[random_anecdote_id];
-            if (anecdote['Texte'] != current_anecdote) {
+            if (anecdote['text'] != current_anecdote) {
                 break;
             }
         }
 
-        // Replace placeholders
-        let OSE_debut = new Date(2018, 3, 11);
-        let OSE_today = new Date();
-        let OSE_nbJours = Math.floor((OSE_today - OSE_debut) / (1000 * 60 * 60 * 24)) + 1;
-        let OSE_humanized = humanizeDuration(OSE_nbJours, { round: true });
-        anecdote['Texte'] = anecdote['Texte'].replace('{1SE_nbJours}', OSE_nbJours);
-        anecdote['Texte'] = anecdote['Texte'].replace('{1SE_duree}', OSE_humanized);
-        
+        // Replace placeholders : durations, dates, etc (dynamic content that needs to be up-to-date)
+        // Format :
+        // {days:ISO8601date} => number of days between the given date and today
+        // {timedelta_days_as_seconds_humanized:ISO8601date} => humanized duration for 1 day = 1 second, 2 days = 2 seconds, ..., 1 year = 6 minutes and 5 days, etc
+        // {timedelta_years_humanized:ISO8601date} => humanized duration between the given date and today (1 day, 2 days, 1 month, 1 year, etc) floored to the year
+        let datePlaceholders = anecdote['text'].match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/g);
+        if (datePlaceholders) {
+            datePlaceholders.forEach(placeholder => {
+                let [_, type, dateStr] = placeholder.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/);
+                const date = new Date(dateStr);
+                const today = new Date();
+                const nbDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+                console.log(`Placeholder: ${placeholder}, Type: ${type}, Date: ${dateStr}, NbDays: ${nbDays}`);
+                if (type === 'days') {
+                    anecdote['text'] = anecdote['text'].replace(placeholder, nbDays);
+                } else if (type === 'timedelta_days_as_seconds_humanized') {
+                    anecdote['text'] = anecdote['text'].replace(placeholder, humanizeDurationSeconds(nbDays)); // use the number of days as a number of seconds - useful for 1SE duration calculation
+                } else if (type === 'timedelta_years_humanized') {
+                    anecdote['text'] = anecdote['text'].replace(placeholder, humanizeDurationDays(nbDays, 1)); // humanize the duration in years, floored to the year
+                }
+            });
+        }
+
         // Set anecdote
-        document.getElementById('anecdote-text').innerHTML = anecdote['Texte'];
-        document.getElementById('anecdote-emoji').innerHTML = anecdote['Emoji'];
-        document.getElementById('anecdote-en_savoir_plus').setAttribute('href', anecdote['En savoir plus']);
+        document.getElementById('anecdote-text').innerHTML = anecdote['text'];
+        document.getElementById('anecdote-emoji').innerHTML = anecdote['emoji'];
+        document.getElementById('anecdote-en_savoir_plus').setAttribute('href', anecdote['learn_more_url']);
+        document.getElementById('anecdote-en_savoir_plus').innerHTML = anecdote['learn_more_text'] || "En savoir plus";
     }
 }
 
