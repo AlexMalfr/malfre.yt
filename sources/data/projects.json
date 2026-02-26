@@ -134,14 +134,5 @@
     ],
     "Lien": "https://github.com/AlexMalfr/cv-json-renderer",
     "Thumbnail": "./sources/images/project-thumbnails/cv-generator.gif"
-  },
-  {
-    "Name": "D'autres projets à venir...",
-    "Année": "",
-    "Description": "Bientôt d'autres projets sur ce site !",
-    "Interets": [],
-    "Tags": [],
-    "Lien": "#",
-    "Thumbnail": "./sources/images/project-thumbnails/a-venir.gif"
   }
 ]

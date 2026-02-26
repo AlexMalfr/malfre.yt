@@ -213,6 +213,10 @@ function getProjects() {
                 const projectElement = createProjectElement(project);
                 projectsDiv.appendChild(projectElement);
             });
+
+            const comingSoonElement = createComingSoonElement();
+            projectsDiv.appendChild(comingSoonElement);
+
             removeLoadingDiv();
             scrollToLastProject();
         })
@@ -289,6 +293,29 @@ function createProjectElement(project) {
     return a;
 }
 
+function createComingSoonElement() {
+    // Create a "coming soon" element at the end of the projects timeline
+    const div = document.createElement('div');
+    div.classList.add('project-div', 'block', 'coming-soon');
+
+    const img = document.createElement('img');
+    img.setAttribute('src', './sources/images/project-thumbnails/a-venir.gif');
+    img.classList.add('project-thumbnail');
+    div.appendChild(img);
+
+    const title = document.createElement('h3');
+    title.classList.add('project-title');
+    title.appendChild(document.createTextNode("D'autres projets à venir..."));
+    div.appendChild(title);
+
+    const description = document.createElement('p');
+    description.classList.add('project-description');
+    description.appendChild(document.createTextNode("Bientôt d'autres projets sur ce site !"));
+    div.appendChild(description);
+
+    return div;
+}
+
 function removeLoadingDiv() {
     const loadingDiv = document.getElementById('projects-loading');
     if (loadingDiv) {
@@ -297,8 +324,19 @@ function removeLoadingDiv() {
 }
 
 function scrollToLastProject() {
+    // Scroll to the 2nd to last project (the last one is the "coming soon" project which is not interesting à scroll to at the initial load)
     const projectsDiv = document.getElementById('projects-timeline');
-    projectsDiv.scrollLeft = projectsDiv.scrollWidth;
+    const lastProjectDiv = projectsDiv.querySelector('.project-div:last-child');
+    if (lastProjectDiv) {
+        const lastProjectWidth = lastProjectDiv.offsetWidth;
+        // Scroll to : (width of pro)
+        projectsDiv.scrollLeft = projectsDiv.scrollWidth - projectsDiv.clientWidth - lastProjectWidth; // scroll to the end minus the width of the last project to have the 2nd to last project at the end of the screen
+        console.log(`scrollToLastProject: lastProjectWidth=${lastProjectWidth}, scrollLeft=${projectsDiv.scrollLeft}, clientWidth=${projectsDiv.clientWidth}`);
+    } else {
+        // If there are no projects, scroll to the end of the div just in case
+        projectsDiv.scrollLeft = projectsDiv.scrollWidth;
+    }
+    
     updateScrollGradients();
 }
 

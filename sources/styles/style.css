@@ -549,6 +549,29 @@ input[type='url']:hover {
     font-weight: bold;
 }
 
+/* "D'autres projets à venir" card — only overrides that differ from .project-div + .block */
+.project-div.coming-soon {
+    opacity: 0.7;
+    filter: grayscale(100%);
+    border-style: dashed;
+    border-color: #bbb;
+    background-color: #f9f9f9;
+    cursor: default;
+    text-align: center;
+    transition: opacity 0.3s ease, filter 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.project-div.coming-soon:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+    background-color: #fff;
+    border-color: #888;
+}
+
+.project-div.coming-soon .project-description {
+    text-align: center;
+}
+
 /* Scrollbar */
 #projects-timeline::-webkit-scrollbar {
     height: 10px;
