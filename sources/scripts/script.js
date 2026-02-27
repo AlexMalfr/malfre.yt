@@ -162,23 +162,9 @@ window.addEventListener('resize', checkHeaderIconsOverflow);
 /* ---------- ABOUT ME SECTION ---------- */
 
 // Audio file
-// document.getElementById('name-tts-btn').addEventListener('click', function () {
-//     const audio = new Audio('./sources/audio/name-pronunciation.mp3');
-//     audio.play();
-// });
-
-// Text-to-speech (TTS) using Web Speech API with Google Translate fallback
 document.getElementById('name-tts-btn').addEventListener('click', function () {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance('Alexandre Malfreyt');
-        utterance.lang = 'fr-FR';
-        window.speechSynthesis.speak(utterance);
-    } else {
-        // Fallback: Google Translate TTS
-        const audio = new Audio('https://translate.googleapis.com/translate_tts?ie=UTF-8&q=Alexandre+Malfreyt&tl=fr&client=gtx');
-        audio.play();
-    }
+    const audio = new Audio('./sources/audio/alexandre-malfreyt-pronounciation.m4a');
+    audio.play();
 });
 
 function getAge() {
