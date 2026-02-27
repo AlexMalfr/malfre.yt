@@ -1,0 +1,211 @@
+[
+    {
+        "name": "Twitter",
+        "url": "https://x.com/AlexMalfr",
+        "icon": "twitter.svg",
+        "important": true,
+        "easterEgg": "twitter-x-glitch",
+        "dropdown": [
+            { "name": "Twitter", "url": "https://x.com/AlexMalfr", "icon": "twitter.svg" },
+            { "name": "Bluesky", "url": "https://bsky.app/profile/alexandre.malfre.yt", "icon": "bluesky.svg" },
+            { "name": "Mastodon", "url": "https://mastodon.social/@AlexMalfreyt", "icon": "mastodon.svg" },
+            { "name": "Threads", "url": "https://www.threads.net/@alex.malfreyt", "icon": "threads.svg" }
+        ]
+    },
+    {
+        "name": "Discord",
+        "url": "https://discord.bio/AlexZeGamer",
+        "icon": "discord.svg",
+        "important": true
+    },
+    {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com/in/alexandre-malfreyt/",
+        "icon": "linkedin.svg",
+        "important": true
+    },
+    {
+        "name": "GitHub",
+        "url": "https://github.com/AlexZeGamer/",
+        "icon": "github.svg",
+        "important": true,
+        "dropdown": [
+            { "name": "GitHub", "url": "https://github.com/AlexZeGamer/", "icon": "github.svg" },
+            { "name": "GitHub Gists", "url": "https://gist.github.com/AlexMalfr", "icon": "github.svg" },
+            { "name": "GitLab", "url": "https://gitlab.com/alexandre.malfreyt", "icon": "gitlab.svg" }
+        ]
+    },
+    {
+        "name": "YouTube",
+        "url": "https://www.youtube.com/user/AlexandreMalfreyt",
+        "icon": "youtube.svg",
+        "important": true,
+        "dropdown": [
+            { "name": "Alexandre MALFREYT", "url": "https://www.youtube.com/user/AlexandreMalfreyt", "icon": "youtube.svg" },
+            { "name": "Alex In MCPE", "url": "https://www.youtube.com/@Alex_In_MCPE", "icon": "youtube.svg" },
+            { "name": "AlexZeGamer - Montages", "url": "https://www.youtube.com/@AlexZeGamerMontages", "icon": "youtube.svg" }
+        ]
+    },
+    {
+        "name": "Instagram",
+        "url": "https://www.instagram.com/alex.malfreyt/",
+        "icon": "instagram.svg",
+        "important": true
+    },
+    {
+        "name": "TikTok",
+        "url": "https://www.tiktok.com/@alexzegamer",
+        "icon": "tiktok.svg",
+        "important": false
+    },
+    {
+        "name": "Facebook",
+        "url": "https://www.facebook.com/alexandre.malfreyt",
+        "icon": "facebook.svg",
+        "important": false
+    },
+    {
+        "name": "Snapchat",
+        "url": "http://www.snapchat.com/add/alex.malfreyt",
+        "icon": "snapchat.svg",
+        "important": false
+    },
+    {
+        "name": "WhatsApp",
+        "url": "https://api.whatsapp.com/send?phone=+33762042148",
+        "icon": "whatsapp.svg",
+        "important": false
+    },
+    {
+        "name": "Reddit",
+        "url": "https://www.reddit.com/user/alexzegamer",
+        "icon": "reddit.svg",
+        "important": false
+    },
+    {
+        "name": "Twitch",
+        "url": "https://www.twitch.tv/alexzegamer",
+        "icon": "twitch.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Twitch", "url": "https://www.twitch.tv/alexzegamer", "icon": "twitch.svg" },
+            { "name": "Speedrun.com", "url": "https://www.speedrun.com/user/AlexZeGamer", "icon": "speedrun.svg" }
+        ]
+    },
+    {
+        "name": "YT Music",
+        "url": "https://music.youtube.com/@AlexandreMalfreyt",
+        "icon": "ytb-music.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "YT Music", "url": "https://music.youtube.com/@AlexandreMalfreyt", "icon": "ytb-music.svg" },
+            { "name": "Spotify", "url": "https://open.spotify.com/user/31vb5r6hyzaoohzwns2ir4ibdx3m", "icon": "spotify.svg" },
+            { "name": "SoundCloud", "url": "https://soundcloud.com/alexzegamer", "icon": "soundcloud.svg" },
+            { "name": "Discogs", "url": "https://www.discogs.com/user/alexandre.malfreyt", "icon": "discogs.svg" }
+        ]
+    },
+    {
+        "name": "Steam",
+        "url": "https://steamcommunity.com/id/alexzegamer/",
+        "icon": "steam.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Steam", "url": "https://steamcommunity.com/id/alexzegamer/", "icon": "steam.svg" },
+            { "name": "Xbox", "icon": "xbox.svg" },
+            { "name": "Epic Games", "url": "https://store.epicgames.com/fr/u/6e939fe927504e17882207d2d3dc3272", "icon": "epic-games.svg" },
+            { "name": "Nintendo Switch", "url": "https://lounge.nintendo.com/friendcode/4855-7998-5565/CrzwxhtmBp", "icon": "nintendo-switch.svg" }
+        ]
+    },
+    {
+        "name": "Google Play Store",
+        "url": "https://play.google.com/store/apps/dev?id=5121796651002435647",
+        "icon": "playstore.svg",
+        "important": false
+    },
+    {
+        "name": "Google Maps",
+        "url": "https://www.google.com/maps/contrib/108186071458482445896/reviews",
+        "icon": "google-maps.svg",
+        "important": false
+    },
+    {
+        "name": "Stack Overflow",
+        "url": "https://stackoverflow.com/users/14234422/alexandre-malfreyt",
+        "icon": "stack-overflow.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Stack Overflow", "url": "https://stackoverflow.com/users/14234422/alexandre-malfreyt", "icon": "stack-overflow.svg" },
+            { "name": "Quora", "url": "https://fr.quora.com/profile/Alexandre-Malfreyt", "icon": "quora.svg" }
+        ]
+    },
+    {
+        "name": "Wikipedia",
+        "url": "https://fr.wikipedia.org/wiki/Utilisateur:AlexZeGamer",
+        "icon": "wikipedia.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Wikipedia FR", "url": "https://fr.wikipedia.org/wiki/Utilisateur:AlexZeGamer", "icon": "wikipedia.svg" },
+            { "name": "Wikipedia EN", "url": "https://en.wikipedia.org/wiki/User:AlexZeGamer", "icon": "wikipedia.svg" },
+            { "name": "Wikimedia", "url": "https://meta.wikimedia.org/wiki/User:AlexZeGamer", "icon": "wikimedia.svg" }
+        ]
+    },
+    {
+        "name": "Minecraft Wiki",
+        "url": "https://fr.minecraft.wiki/w/User:AlexZeGamr",
+        "icon": "mc-wiki.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Minecraft Wiki FR", "url": "https://fr.minecraft.wiki/w/User:AlexZeGamr", "icon": "mc-wiki.svg" },
+            { "name": "Minecraft Wiki EN", "url": "https://minecraft.wiki/w/User:AlexZeGamr", "icon": "mc-wiki.svg" },
+            { "name": "NameMC", "url": "https://fr.namemc.com/profile/AlexZeGamer", "icon": "namemc.svg" }
+        ]
+    },
+    {
+        "name": "Duolingo",
+        "url": "https://www.duolingo.com/profile/AlexZeGamer",
+        "icon": "duolingo.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Duolingo", "url": "https://www.duolingo.com/profile/AlexZeGamer", "icon": "duolingo.svg" },
+            { "name": "Quizlet", "url": "https://quizlet.com/user/Alexandre-Malfreyt", "icon": "quizlet.svg" }
+        ]
+    },
+    {
+        "name": "Thingiverse",
+        "url": "https://www.thingiverse.com/AlexZeGamer/designs",
+        "icon": "thingiverse.svg",
+        "important": false,
+        "dropdown": [
+            { "name": "Thingiverse", "url": "https://www.thingiverse.com/AlexZeGamer/designs", "icon": "thingiverse.svg" },
+            { "name": "PCBWay", "url": "https://www.pcbway.com/project/member/shareproject/?bmbno=9E69D146-AF9F-4D", "icon": "pcbway.svg" },
+            { "name": "Hugging Face", "url": "https://huggingface.co/AlexZeGamer", "icon": "huggingface.svg" }
+        ]
+    },
+    {
+        "name": "Geocaching",
+        "url": "https://www.geocaching.com/p/?guid=35abf5e7-41f9-4935-b2f3-a2566164ee7b",
+        "icon": "geocaching.svg",
+        "important": false
+    },
+    {
+        "name": "Dons",
+        "icon": "money.svg",
+        "important": true,
+        "dropdown": [
+            { "name": "PayPal", "url": "https://www.paypal.me/AMalfreyt", "icon": "paypal.svg" },
+            { "name": "Revolut", "url": "https://revolut.me/amalfreyt", "icon": "revolut.svg" },
+            { "name": "Bitcoin", "copyText": "3DrMc8bs6vqu2VPY3T5L7DciXFkh4UQXHE", "icon": "bitcoin.svg" },
+            { "name": "Ethereum", "copyText": "0x4d1F50E3f206A0008Dab099CF4705075A01cf534", "icon": "ethereum.svg" }
+        ]
+    },
+    {
+        "name": "Email",
+        "icon": "email.svg",
+        "important": true,
+        "dropdown": [
+            { "name": "alexandre@malfre.yt", "url": "mailto:alexandre@malfre.yt" },
+            { "name": "alexandre.malfreyt@gmail.com", "url": "mailto:alexandre.malfreyt@gmail.com" },
+            { "name": "alexandre.malfreyt@universite-paris-saclay.fr", "url": "mailto:alexandre.malfreyt@universite-paris-saclay.fr" }
+        ]
+    }
+]

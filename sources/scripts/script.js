@@ -132,6 +132,7 @@ function checkHeaderIconsOverflow() {
     and add a class to the parent element if it does */
 
     const container = document.querySelector('.liens ul');
+    if (!container || container.children.length === 0) return;
 
     const originalWhiteSpace = container.style.whiteSpace;
 
@@ -154,9 +155,228 @@ function checkHeaderIconsOverflow() {
     }
 }
 
-// Check if header icons overflow on page load and on resize
-document.addEventListener('DOMContentLoaded', checkHeaderIconsOverflow);
-window.addEventListener('resize', checkHeaderIconsOverflow);
+
+/* ---------- SOCIAL LINKS (dynamic from JSON) ---------- */
+
+document.addEventListener('DOMContentLoaded', generateSocialLinks);
+
+function generateSocialLinks() {
+    fetch('./sources/data/links.json')
+        .then(res => res.json())
+        .then(links => {
+            const ul = document.getElementById('social-links');
+            if (!ul) return;
+
+            links.forEach(link => {
+                const li = createLinkElement(link);
+                ul.appendChild(li);
+            });
+
+            ul.appendChild(createToggleLi());
+
+            checkHeaderIconsOverflow();
+            setupTwitterEasterEgg();
+        })
+        .catch(err => {
+            console.error('Error loading social links:', err);
+        });
+}
+
+const ICON_PLACEHOLDER = './sources/images/icons/missing.svg';
+
+function withIconFallback(imgEl) {
+    imgEl.addEventListener('error', function () {
+        if (imgEl.src !== ICON_PLACEHOLDER) imgEl.src = ICON_PLACEHOLDER;
+    });
+    return imgEl;
+}
+
+function createLinkElement(link) {
+    const li = document.createElement('li');
+
+    if (!link.important) {
+        li.classList.add('link-secondary');
+    }
+
+    if (link.easterEgg) {
+        li.dataset.easterEgg = link.easterEgg;
+    }
+
+    const iconSrc = './sources/images/icons/' + link.icon;
+
+    if (link.dropdown) {
+        // Dropdown item
+        li.classList.add('dropdown');
+
+        if (link.url) {
+            const mainLink = document.createElement('a');
+            mainLink.href = link.url;
+            mainLink.title = link.name;
+
+            const img = withIconFallback(document.createElement('img'));
+            img.classList.add('social-icon', 'icon');
+            img.src = iconSrc;
+            img.alt = link.name;
+            mainLink.appendChild(img);
+            li.appendChild(mainLink);
+        } else {
+            const img = withIconFallback(document.createElement('img'));
+            img.classList.add('social-icon', 'icon');
+            img.src = iconSrc;
+            img.alt = link.name;
+            li.appendChild(img);
+        }
+
+        const dropdownDiv = document.createElement('div');
+        dropdownDiv.classList.add('dropdown-content');
+
+        link.dropdown.forEach(item => {
+            if (item.copyText) {
+                const input = document.createElement('input');
+                input.classList.add('dropdown-item');
+                input.type = 'image';
+                input.title = item.name;
+                input.alt = item.name;
+                if (item.icon) {
+                    input.src = './sources/images/icons/' + item.icon;
+                withIconFallback(input);
+                }
+                const textToCopy = item.copyText;
+                input.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    copy(textToCopy);
+                });
+                dropdownDiv.appendChild(input);
+            } else {
+                const a = document.createElement('a');
+                a.classList.add('dropdown-item');
+                a.href = item.url;
+                a.title = item.name;
+
+                if (item.icon) {
+                    const itemImg = withIconFallback(document.createElement('img'));
+                    itemImg.src = './sources/images/icons/' + item.icon;
+                    itemImg.alt = item.name;
+                    a.appendChild(itemImg);
+                }
+
+                a.appendChild(document.createTextNode(item.name));
+                dropdownDiv.appendChild(a);
+            }
+        });
+
+        li.appendChild(dropdownDiv);
+    } else if (link.url) {
+        // Simple link
+        const a = document.createElement('a');
+        a.href = link.url;
+        a.title = link.name;
+
+        const img = withIconFallback(document.createElement('img'));
+        img.classList.add('social-icon', 'icon');
+        img.src = iconSrc;
+        img.alt = link.name;
+        a.appendChild(img);
+        li.appendChild(a);
+    } else {
+        // No URL (e.g. Xbox TODO) — non-clickable icon
+        const img = withIconFallback(document.createElement('img'));
+        img.classList.add('social-icon', 'icon', 'link-unavailable');
+        img.src = iconSrc;
+        img.alt = link.name;
+        img.title = link.name;
+        li.appendChild(img);
+    }
+
+    return li;
+}
+
+
+/* ---------- LINKS COLLAPSE / EXPAND ---------- */
+
+function createToggleLi() {
+    const li = document.createElement('li');
+    li.id = 'links-toggle';
+    li.title = 'Afficher plus de liens';
+    li.setAttribute('aria-label', 'Afficher plus de liens');
+    li.setAttribute('role', 'button');
+    li.setAttribute('tabindex', '0');
+
+    const img = document.createElement('img');
+    img.src = './sources/images/icons/chevron.svg';
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    li.appendChild(img);
+
+    li.addEventListener('click', toggleLinksExpanded);
+    li.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleLinksExpanded(); }
+    });
+
+    return li;
+}
+
+function toggleLinksExpanded() {
+    const liensDiv = document.querySelector('.liens');
+    const toggle = document.getElementById('links-toggle');
+    if (!liensDiv || !toggle) return;
+
+    if (liensDiv.classList.contains('links-expanded')) {
+        liensDiv.classList.remove('links-expanded');
+        toggle.title = 'Afficher plus de liens';
+        toggle.setAttribute('aria-label', 'Afficher plus de liens');
+    } else {
+        liensDiv.classList.add('links-expanded');
+        toggle.title = 'Afficher moins de liens';
+        toggle.setAttribute('aria-label', 'Afficher moins de liens');
+    }
+
+    checkHeaderIconsOverflow();
+}
+
+
+/* ---------- TWITTER/X EASTER EGG ---------- */
+
+function setupTwitterEasterEgg() {
+    const twitterLi = document.querySelector('[data-easter-egg="twitter-x-glitch"]');
+    if (!twitterLi) return;
+
+    const twitterIcon = twitterLi.querySelector('.social-icon');
+    if (!twitterIcon) return;
+
+    const originalSrc = twitterIcon.src;
+    const xSrc = './sources/images/icons/x.svg';
+
+    function triggerGlitch() {
+        // Phase 1: Start glitch animation
+        twitterIcon.classList.add('twitter-glitching');
+
+        // Phase 2: Switch to X icon
+        setTimeout(function () { twitterIcon.src = xSrc; }, 300);
+
+        // Phase 3: Stop glitch, show X cleanly
+        setTimeout(function () { twitterIcon.classList.remove('twitter-glitching'); }, 800);
+
+        // Phase 4: Glitch back
+        setTimeout(function () { twitterIcon.classList.add('twitter-glitching'); }, 3000);
+
+        // Phase 5: Switch back to Twitter
+        setTimeout(function () { twitterIcon.src = originalSrc; }, 3300);
+
+        // Phase 6: Clean up and schedule next
+        setTimeout(function () {
+            twitterIcon.classList.remove('twitter-glitching');
+            scheduleGlitch();
+        }, 3600);
+    }
+
+    function scheduleGlitch() {
+        var delay = 30000 + Math.random() * 60000; // 30–90 seconds
+        setTimeout(triggerGlitch, delay);
+    }
+
+    scheduleGlitch();
+}
 
 
 /* ---------- ABOUT ME SECTION ---------- */
