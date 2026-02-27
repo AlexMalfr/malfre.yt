@@ -176,6 +176,7 @@ function generateSocialLinks() {
 
             checkHeaderIconsOverflow();
             setupTwitterEasterEgg();
+            setupDropdowns();
         })
         .catch(err => {
             console.error('Error loading social links:', err);
@@ -208,6 +209,9 @@ function createLinkElement(link) {
         // Dropdown item
         li.classList.add('dropdown');
 
+        const iconWrapper = document.createElement('span');
+        iconWrapper.classList.add('icon-wrapper');
+
         if (link.url) {
             const mainLink = document.createElement('a');
             mainLink.href = link.url;
@@ -218,35 +222,52 @@ function createLinkElement(link) {
             img.src = iconSrc;
             img.alt = link.name;
             mainLink.appendChild(img);
-            li.appendChild(mainLink);
+            iconWrapper.appendChild(mainLink);
         } else {
             const img = withIconFallback(document.createElement('img'));
             img.classList.add('social-icon', 'icon');
             img.src = iconSrc;
             img.alt = link.name;
-            li.appendChild(img);
+            iconWrapper.appendChild(img);
         }
+
+        const badge = document.createElement('span');
+        badge.classList.add('dropdown-badge');
+        badge.textContent = '+';
+        badge.setAttribute('aria-hidden', 'true');
+        iconWrapper.appendChild(badge);
+        li.appendChild(iconWrapper);
 
         const dropdownDiv = document.createElement('div');
         dropdownDiv.classList.add('dropdown-content');
 
+        // Safety zone: invisible bridge between icon and dropdown for hover continuity
+        const safetyZone = document.createElement('div');
+        safetyZone.classList.add('dropdown-content-safety');
+        dropdownDiv.appendChild(safetyZone);
+
         link.dropdown.forEach(item => {
             if (item.copyText) {
-                const input = document.createElement('input');
-                input.classList.add('dropdown-item');
-                input.type = 'image';
-                input.title = item.name;
-                input.alt = item.name;
+                const a = document.createElement('a');
+                a.classList.add('dropdown-item');
+                a.href = '#';
+                a.title = item.name;
+
                 if (item.icon) {
-                    input.src = './sources/images/icons/' + item.icon;
-                withIconFallback(input);
+                    const itemImg = withIconFallback(document.createElement('img'));
+                    itemImg.src = './sources/images/icons/' + item.icon;
+                    itemImg.alt = item.name;
+                    a.appendChild(itemImg);
                 }
+
+                a.appendChild(document.createTextNode(item.name));
+
                 const textToCopy = item.copyText;
-                input.addEventListener('click', function (e) {
+                a.addEventListener('click', function (e) {
                     e.preventDefault();
                     copy(textToCopy);
                 });
-                dropdownDiv.appendChild(input);
+                dropdownDiv.appendChild(a);
             } else {
                 const a = document.createElement('a');
                 a.classList.add('dropdown-item');
@@ -332,6 +353,222 @@ function toggleLinksExpanded() {
     }
 
     checkHeaderIconsOverflow();
+}
+
+
+/* ---------- DROPDOWNS ---------- */
+
+function setupDropdowns() {
+    const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    const dropdowns = document.querySelectorAll('.dropdown');
+
+    // On mobile: tap icon to toggle dropdown, prevent navigating away
+    dropdowns.forEach(dropdown => {
+        const mainLink = dropdown.querySelector('.icon-wrapper a');
+        if (mainLink) {
+            mainLink.addEventListener('click', function (e) {
+                if (isTouchDevice()) {
+                    e.preventDefault();
+                    toggleDropdown(dropdown);
+                }
+            });
+        } else {
+            // No link wrapper (e.g. Dons, Email) — icon itself toggles
+            const icon = dropdown.querySelector('.icon-wrapper .social-icon');
+            if (icon) {
+                icon.style.cursor = 'pointer';
+                icon.addEventListener('click', function () {
+                    if (isTouchDevice()) toggleDropdown(dropdown);
+                });
+            }
+        }
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function (e) {
+        dropdowns.forEach(dd => {
+            if (!dd.contains(e.target)) dd.classList.remove('dropdown-open');
+        });
+    });
+
+    // Clamp dropdown position to viewport edges on desktop hover + safety triangle
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('mouseenter', function () {
+            clampDropdown(dropdown);
+        });
+        setupSafetyTriangle(dropdown);
+    });
+}
+
+function toggleDropdown(dropdown) {
+    const wasOpen = dropdown.classList.contains('dropdown-open');
+    // Close all others first
+    document.querySelectorAll('.dropdown.dropdown-open').forEach(dd => dd.classList.remove('dropdown-open'));
+    if (!wasOpen) {
+        dropdown.classList.add('dropdown-open');
+        clampDropdown(dropdown);
+    }
+}
+
+function clampDropdown(dropdown) {
+    const content = dropdown.querySelector('.dropdown-content');
+    if (!content) return;
+
+    // Reset any previous manual positioning
+    content.style.left = '';
+    content.style.right = '';
+    content.style.transform = '';
+
+    // On mobile (fixed positioning), always center
+    if (window.innerWidth <= 700) {
+        content.style.left = '50%';
+        content.style.transform = 'translateX(-50%)';
+        // Vertically position below the icon
+        const rect = dropdown.getBoundingClientRect();
+        content.style.top = (rect.bottom + 8) + 'px';
+        return;
+    }
+
+    // Desktop: start centered, then clamp
+    content.style.left = '50%';
+    content.style.transform = 'translateX(-50%)';
+
+    const rect = content.getBoundingClientRect();
+    const margin = 20;
+
+    if (rect.left < margin) {
+        // Overflows left edge
+        const parentRect = dropdown.getBoundingClientRect();
+        const shift = margin - rect.left;
+        content.style.left = (parentRect.width / 2 + shift) + 'px';
+        // Move the triangle to stay centered on the icon
+        content.style.setProperty('--arrow-offset', (-shift) + 'px');
+    } else if (rect.right > window.innerWidth - margin) {
+        // Overflows right edge
+        const parentRect = dropdown.getBoundingClientRect();
+        const shift = rect.right - (window.innerWidth - margin);
+        content.style.left = (parentRect.width / 2 - shift) + 'px';
+        content.style.setProperty('--arrow-offset', shift + 'px');
+    } else {
+        content.style.setProperty('--arrow-offset', '0px');
+    }
+}
+
+
+/* ---------- SAFETY TRIANGLE ---------- */
+
+function setupSafetyTriangle(dropdown) {
+    let safetySvg = null;
+    let safetyPath = null;
+    let safetyDebugPath = null;
+    let frozenApex = null; // frozen {x, y} when cursor starts moving down
+    let prevY = null;
+
+    function ensureOverlay() {
+        if (safetySvg) return;
+        safetySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        safetySvg.classList.add('dropdown-safety-triangle');
+
+        // Visual debug path (no pointer-events — just shows the full triangle)
+        safetyDebugPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        safetyDebugPath.style.pointerEvents = 'none';
+        safetyDebugPath.setAttribute('fill', 'none');
+        // DEBUG: uncomment to visualize triangle
+        // safetyDebugPath.setAttribute('fill', 'rgba(255, 0, 0, 0.12)');
+        // safetyDebugPath.setAttribute('stroke', 'red');
+        // safetyDebugPath.setAttribute('stroke-width', '0.5');
+
+        // Hit-test path (pointer-events: auto — only covers gap below icon)
+        safetyPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        safetyPath.style.pointerEvents = 'auto';
+        safetyPath.setAttribute('fill', 'transparent');
+
+        safetySvg.appendChild(safetyDebugPath);
+        safetySvg.appendChild(safetyPath);
+        dropdown.appendChild(safetySvg);
+        frozenApex = null;
+        prevY = null;
+    }
+
+    function updatePath(mx, my) {
+        const content = dropdown.querySelector('.dropdown-content');
+        if (!content || !safetyPath) return;
+
+        const r = content.getBoundingClientRect();
+        const liRect = dropdown.getBoundingClientRect();
+
+        // If cursor is at or below the dropdown top, no triangle needed
+        if (my >= r.top) {
+            safetyPath.removeAttribute('d');
+            safetyDebugPath.removeAttribute('d');
+            frozenApex = null;
+            prevY = null;
+            return;
+        }
+
+        const movingDown = prevY !== null && my > prevY;
+        prevY = my;
+
+        if (movingDown) {
+            if (!frozenApex) {
+                frozenApex = { x: mx, y: my };
+            }
+        } else {
+            frozenApex = null;
+        }
+
+        const ax = frozenApex ? frozenApex.x : mx;
+        const ay = frozenApex ? frozenApex.y : my;
+
+        // Clamp the base width so the angle at the cursor stays narrow.
+        // Max half-width of the base (each side from center of dropdown).
+        const maxHalfBase = 100;
+        const centerX = (r.left + r.right) / 2;
+        const baseLeft = Math.max(r.left, centerX - maxHalfBase);
+        const baseRight = Math.min(r.right, centerX + maxHalfBase);
+
+        // Debug path: full triangle from cursor to dropdown corners
+        safetyDebugPath.setAttribute('d',
+            'M ' + ax + ',' + ay +
+            ' L ' + baseLeft + ',' + r.top +
+            ' L ' + baseRight + ',' + r.top +
+            ' Z');
+
+        // Hit-test path: only the gap below the icon to the dropdown
+        const hitTop = Math.max(ay, liRect.bottom);
+        safetyPath.setAttribute('d',
+            'M ' + ax + ',' + hitTop +
+            ' L ' + baseLeft + ',' + r.top +
+            ' L ' + baseRight + ',' + r.top +
+            ' Z');
+    }
+
+    function removeOverlay() {
+        if (safetySvg) {
+            safetySvg.remove();
+            safetySvg = null;
+            safetyPath = null;
+            safetyDebugPath = null;
+            frozenApex = null;
+            prevY = null;
+        }
+    }
+
+    dropdown.addEventListener('mouseenter', function () {
+        if (window.innerWidth <= 700) return;
+        ensureOverlay();
+    });
+
+    dropdown.addEventListener('mousemove', function (e) {
+        if (window.innerWidth <= 700) return;
+        if (!safetySvg) ensureOverlay();
+        updatePath(e.clientX, e.clientY);
+    });
+
+    dropdown.addEventListener('mouseleave', function () {
+        removeOverlay();
+    });
 }
 
 
@@ -611,6 +848,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.addEventListener('resize', scrollToLastProject);
+window.addEventListener('resize', checkHeaderIconsOverflow);
 
 
 /* ---------- ANECDOTES SECTION ---------- */
