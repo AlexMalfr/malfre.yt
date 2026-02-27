@@ -184,6 +184,24 @@
     "thumbnail": "./sources/images/project-thumbnails/cv-generator.gif"
   },
   {
+    "name": "AmphiBien",
+    "year": "2025",
+    "description": "Le “Tripadvisor” des amphis ! 🎓\n\nUne plateforme communautaire conçue dans le cadre d'un cours de développement web en école d'ingénieurs, et permettant aux étudiants de trouver, évaluer et signaler des problèmes dans les amphithéâtres de leur université. Fortement inspirée du fonctionnement de Google Maps.",
+    "interests": [
+      "Design web",
+      "Full-stack"
+    ],
+    "tags": [
+      "RedwoodJS",
+      "React",
+      "GraphQL",
+      "Firebase",
+      "GCP"
+    ],
+    "url": "https://github.com/AlexMalfr/amphi-bien",
+    "thumbnail": "./sources/images/project-thumbnails/amphi-bien.gif"
+  },
+  {
     "name": "YACC (Yet Another C Compiler)",
     "year": "2025",
     "description": "Un compilateur simple pour un sous-ensemble du langage C, écrit en Python dans le cadre d’un cours de compilation en école d’ingénieurs. Il traduit du C en assembleur pour une machine à pile minimale (MSM).",
