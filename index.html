@@ -90,7 +90,16 @@
         <h1>Alexandre MALFREYT</h1>
         
         <div class="liens">
-            <ul id="social-links"></ul>
+            <ul id="social-links">
+                <!-- Skeletons for header icons -->
+                <script>
+                    // Add initial skeletons synchronously before JS executes to avoid layout shift
+                    const numIcons = window.innerWidth <= 700 ? 5 : 8;
+                    for (let i = 0; i < numIcons; i++) {
+                        document.write('<li class="header-skeleton"><span class="social-icon skeleton" style="display: inline-block; vertical-align: middle;"></span></li>');
+                    }
+                </script>
+            </ul>
         </div>
     </header>
 
@@ -99,7 +108,18 @@
         <h2 id="aboutme">À propos de moi</h2>
     
         <div id="aboutme-div">
-            <img id="aboutme-photo" src="./sources/images/photo.png" alt="Photo de Alexandre MALFREYT" />
+            <div id="aboutme-photo-container" class="skeleton" style="position: relative; width: 124px; height: 150px; border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg id="aboutme-photo-skeleton" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0;" viewBox="0 0 124 150" preserveAspectRatio="xMidYMid slice">
+                    <rect width="124" height="150" fill="transparent" />
+                    <path
+                        d="M69.2233 113.7C85.6792 113.7 95.4078 100.65 97.5146 77.4C101.277 69.45 101.427 62.1 101.427 55.35C104.437 45.15 101.343 29.55 92.699 30.45C92.699 30.45 88.7864 22.95 90.1407 17.7C88.1541 16.0366 87.131 17.1 79.0048 20.1C71.1796 16.35 65.7204 21.2221 59.7427 25.5C41.6844 29.85 27.5388 58.2 41.534 77.4C43.7913 101.85 52.7673 113.7 69.2233 113.7Z"
+                        fill="black" fill-opacity="0.1" />
+                    <path
+                        d="M78.4503 199.033C118.81 197.432 150.797 177.816 149.896 155.218C148.994 132.619 115.545 115.597 75.1848 117.197C34.8249 118.797 2.83769 138.414 3.73942 161.012C4.64116 183.61 38.0904 200.633 78.4503 199.033Z"
+                        fill="black" fill-opacity="0.1" />
+                </svg>
+                <img id="aboutme-photo" fetchpriority="high" onload="document.getElementById('aboutme-photo-skeleton').style.display = 'none'; this.style.opacity = '1'; this.parentElement.classList.remove('skeleton'); this.parentElement.style.width = 'auto';" src="./sources/images/photo.png" alt="Photo de Alexandre MALFREYT" style="position: relative; z-index: 1; opacity: 0; transition: opacity 0.3s ease-in-out; border-radius: 20px;" />
+            </div>
             <div id="aboutme-text">
                 <div id="aboutme-info">
                     <p id="aboutme-name"><span id="name-and-btn">Alexandre MALFREYT <button id="name-tts-btn" title="Écouter la prononciation" aria-label="Écouter la prononciation">🔊</button></span><span id="name-ipa">/alɛksɑ̃dʁ malfʁe/</span></p>
@@ -134,7 +154,9 @@
         <div id="projects-timeline-wrapper">
             <div id="projects-timeline">
                 <!-- Les projets sont générés par le script JS -->
-                <p id="projects-loading" class="block">Chargement en cours...</p>
+                <div id="projects-loading" style="display: flex;">
+                    <!-- Les skeletons des projets sont insérés en JS dynamiquement suivant la taille de l'écran -->
+                </div>
             </div>
         </div>
     </section>
@@ -144,8 +166,11 @@
         <h2 id="anecdote">Une anecdote aléatoire sur moi</h2>
         <div id="anecdote-div" class="block" onload="getAnecdote()">
             <div id="anecdote-content">
-                <h1 id="anecdote-emoji">⌛</h1>
-                <p id="anecdote-text">Chargement en cours...</p>
+                <h1 id="anecdote-emoji" class="skeleton" style="color: transparent;">⌛</h1>
+                <div id="anecdote-text" style="width: 100%;">
+                    <span class="skeleton-text-line skeleton"></span>
+                    <span class="skeleton-text-line medium skeleton"></span>
+                </div>
             </div>
             
             <img id="refresh" src="./sources/images/icons/refresh.svg" alt="Une autre !" onclick="getAnecdote()"/>

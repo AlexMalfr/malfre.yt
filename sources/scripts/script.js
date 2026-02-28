@@ -167,6 +167,9 @@ function generateSocialLinks() {
             const ul = document.getElementById('social-links');
             if (!ul) return;
 
+            // Remove skeletons
+            ul.querySelectorAll('.header-skeleton').forEach(el => el.remove());
+
             links.forEach(link => {
                 const li = createLinkElement(link);
                 ul.appendChild(li);
@@ -192,6 +195,52 @@ function withIconFallback(imgEl) {
     return imgEl;
 }
 
+function createIconWithSkeleton(src, alt, iconType = 'social') {
+    const wrapper = document.createElement('span');
+    wrapper.classList.add('skeleton');
+    wrapper.style.display = 'inline-flex';
+    wrapper.style.verticalAlign = 'middle';
+    wrapper.style.justifyContent = 'center';
+    wrapper.style.alignItems = 'center';
+
+    const img = document.createElement('img');
+    
+    if (iconType === 'social') {
+        wrapper.classList.add('social-icon', 'icon');
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+    } else if (iconType === 'dropdown') {
+        wrapper.style.width = '20px';
+        wrapper.style.height = '20px';
+        wrapper.style.flexShrink = '0';
+        wrapper.style.borderRadius = '50%'; // make dropdown skeleton circular too
+        // image will adapt to its .dropdown-item img styling implicitly, 
+        // but let's ensure it fits inside the wrapper
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+    }
+
+    img.alt = alt;
+    img.fetchPriority = 'high';
+    img.style.opacity = '0';
+    img.style.transition = 'opacity 0.2s';
+    
+    img.onload = () => {
+        img.style.opacity = '1';
+        wrapper.classList.remove('skeleton');
+    };
+    img.src = src;
+    
+    withIconFallback(img);
+    wrapper.appendChild(img);
+    
+    // We return the wrapper, but we attach a property to access the image if needed (e.g., for easter egg)
+    wrapper._img = img;
+    return wrapper;
+}
+
 function createLinkElement(link) {
     const li = document.createElement('li');
 
@@ -212,23 +261,16 @@ function createLinkElement(link) {
         const iconWrapper = document.createElement('span');
         iconWrapper.classList.add('icon-wrapper');
 
+        const iconContainer = createIconWithSkeleton(iconSrc, link.name, 'social');
+
         if (link.url) {
             const mainLink = document.createElement('a');
             mainLink.href = link.url;
             mainLink.title = link.name;
-
-            const img = withIconFallback(document.createElement('img'));
-            img.classList.add('social-icon', 'icon');
-            img.src = iconSrc;
-            img.alt = link.name;
-            mainLink.appendChild(img);
+            mainLink.appendChild(iconContainer);
             iconWrapper.appendChild(mainLink);
         } else {
-            const img = withIconFallback(document.createElement('img'));
-            img.classList.add('social-icon', 'icon');
-            img.src = iconSrc;
-            img.alt = link.name;
-            iconWrapper.appendChild(img);
+            iconWrapper.appendChild(iconContainer);
         }
 
         const badge = document.createElement('span');
@@ -254,10 +296,9 @@ function createLinkElement(link) {
                 a.title = item.name;
 
                 if (item.icon) {
-                    const itemImg = withIconFallback(document.createElement('img'));
-                    itemImg.src = './sources/images/icons/' + item.icon;
-                    itemImg.alt = item.name;
-                    a.appendChild(itemImg);
+                    const itemImgPath = './sources/images/icons/' + item.icon;
+                    const itemIconContainer = createIconWithSkeleton(itemImgPath, item.name, 'dropdown');
+                    a.appendChild(itemIconContainer);
                 }
 
                 a.appendChild(document.createTextNode(item.name));
@@ -275,10 +316,9 @@ function createLinkElement(link) {
                 a.title = item.name;
 
                 if (item.icon) {
-                    const itemImg = withIconFallback(document.createElement('img'));
-                    itemImg.src = './sources/images/icons/' + item.icon;
-                    itemImg.alt = item.name;
-                    a.appendChild(itemImg);
+                    const itemImgPath = './sources/images/icons/' + item.icon;
+                    const itemIconContainer = createIconWithSkeleton(itemImgPath, item.name, 'dropdown');
+                    a.appendChild(itemIconContainer);
                 }
 
                 a.appendChild(document.createTextNode(item.name));
@@ -293,20 +333,15 @@ function createLinkElement(link) {
         a.href = link.url;
         a.title = link.name;
 
-        const img = withIconFallback(document.createElement('img'));
-        img.classList.add('social-icon', 'icon');
-        img.src = iconSrc;
-        img.alt = link.name;
-        a.appendChild(img);
+        const iconContainer = createIconWithSkeleton(iconSrc, link.name, 'social');
+        a.appendChild(iconContainer);
         li.appendChild(a);
     } else {
         // No URL (e.g. Xbox TODO) — non-clickable icon
-        const img = withIconFallback(document.createElement('img'));
-        img.classList.add('social-icon', 'icon', 'link-unavailable');
-        img.src = iconSrc;
-        img.alt = link.name;
-        img.title = link.name;
-        li.appendChild(img);
+        const iconContainer = createIconWithSkeleton(iconSrc, link.name, 'social');
+        iconContainer.classList.add('link-unavailable');
+        iconContainer._img.title = link.name;
+        li.appendChild(iconContainer);
     }
 
     return li;
@@ -584,31 +619,34 @@ function setupTwitterEasterEgg() {
     const twitterLi = document.querySelector('[data-easter-egg="twitter-x-glitch"]');
     if (!twitterLi) return;
 
-    const twitterIcon = twitterLi.querySelector('.social-icon');
-    if (!twitterIcon) return;
+    const twitterIconWrapper = twitterLi.querySelector('.social-icon');
+    if (!twitterIconWrapper) return;
+    
+    // The actual image is correctly referenced via ._img property or querySelector
+    const twitterImg = twitterIconWrapper._img || twitterIconWrapper.querySelector('img');
 
-    const originalSrc = twitterIcon.src;
+    const originalSrc = twitterImg.src;
     const xSrc = './sources/images/icons/x.svg';
 
     function triggerGlitch() {
         // Phase 1: Start glitch animation
-        twitterIcon.classList.add('twitter-glitching');
+        twitterIconWrapper.classList.add('twitter-glitching');
 
         // Phase 2: Switch to X icon
-        setTimeout(function () { twitterIcon.src = xSrc; }, 300);
+        setTimeout(function () { twitterImg.src = xSrc; }, 300);
 
         // Phase 3: Stop glitch, show X cleanly
-        setTimeout(function () { twitterIcon.classList.remove('twitter-glitching'); }, 800);
+        setTimeout(function () { twitterIconWrapper.classList.remove('twitter-glitching'); }, 800);
 
         // Phase 4: Glitch back
-        setTimeout(function () { twitterIcon.classList.add('twitter-glitching'); }, 3000);
+        setTimeout(function () { twitterIconWrapper.classList.add('twitter-glitching'); }, 3000);
 
         // Phase 5: Switch back to Twitter
-        setTimeout(function () { twitterIcon.src = originalSrc; }, 3300);
+        setTimeout(function () { twitterImg.src = originalSrc; }, 3300);
 
         // Phase 6: Clean up and schedule next
         setTimeout(function () {
-            twitterIcon.classList.remove('twitter-glitching');
+            twitterIconWrapper.classList.remove('twitter-glitching');
             scheduleGlitch();
         }, 3600);
     }
@@ -648,7 +686,66 @@ getAge();
 
 /* ---------- PROJECTS SECTION ---------- */
 
-document.addEventListener("DOMContentLoaded", getProjects);
+function generateProjectSkeletons() {
+    const container = document.getElementById('projects-loading');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    // Calculate how many skeletons we need to fill the screen + some overflow
+    const projectWidth = window.innerWidth <= 700 ? window.innerWidth : 330; // approx width + margin
+    const numSkeletons = Math.ceil(window.innerWidth / projectWidth) + 1;
+    
+    for (let i = 0; i < numSkeletons; i++) {
+        const div = document.createElement('div');
+        div.classList.add('project-div', 'block', 'skeleton-project');
+        
+        // Randomize lengths to make it look organic
+        const titleWidth = Math.floor(Math.random() * 40) + 40; // 40-80%
+        const dateWidth = Math.floor(Math.random() * 20) + 20; // 20-40%
+        const numTags = Math.floor(Math.random() * 3) + 1; // 1-3 tags
+        
+        // Complex randomized description
+        const descLines = [];
+        const numParagraphs = Math.floor(Math.random() * 2) + 1; // 1-2 paragraphs
+        
+        for (let p = 0; p < numParagraphs; p++) {
+            const numLines = Math.floor(Math.random() * 3) + 2; // 2-4 lines per paragraph
+            for (let l = 0; l < numLines; l++) {
+                const lineWidth = (l === numLines - 1) ? (Math.floor(Math.random() * 50) + 30) : 100;
+                descLines.push(`<span class="skeleton-text-line skeleton" style="width: ${lineWidth}%;"></span>`);
+            }
+            if (p < numParagraphs - 1) {
+                 descLines.push(`<br><br>`);
+            }
+        }
+        
+        let tagsHtml = '';
+        for (let t = 0; t < numTags; t++) {
+            const tagWidth = Math.floor(Math.random() * 30) + 40; // 40-70px width
+            tagsHtml += `<span class="project-tag skeleton" style="width: ${tagWidth}px; color: transparent; display: inline-block;">tag</span>`;
+        }
+
+        div.innerHTML = `
+            <div class="project-thumbnail-wrapper skeleton"></div>
+            <h3 class="project-title skeleton" style="margin-top: 10px; width: ${titleWidth}%; display: inline-block;">---</h3>
+            <p class="project-date skeleton" style="width: ${dateWidth}%; display: block;">---</p>
+            <p class="project-description" style="margin-top: 15px">
+                ${descLines.join('')}
+            </p>
+            <div class="project-tags" style="margin-top: 15px;">
+                ${tagsHtml}
+            </div>
+        `;
+        
+        container.appendChild(div);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    generateProjectSkeletons();
+    getProjects();
+});
 
 function getProjects() {
     fetchProjectsData()
@@ -672,7 +769,7 @@ function getProjects() {
         .catch(error => {
             const loadingDiv = document.getElementById('projects-loading');
             if (loadingDiv) {
-                loadingDiv.textContent = '❌ Erreur lors du chargement des projets.';
+                loadingDiv.innerHTML = '<p class="block" style="width: 100%;">❌ Erreur lors du chargement des projets.</p>';
             }
         });
 }
@@ -735,11 +832,23 @@ function createProjectElement(project) {
     const div = document.createElement('div');
     div.classList.add('project-div', 'block');
 
+    const imgWrap = document.createElement('div');
+    imgWrap.classList.add('project-thumbnail-wrapper', 'skeleton');
+
     const img = document.createElement('img');
     img.setAttribute('src', thumbnail);
     img.setAttribute('alt', name);
     img.classList.add('project-thumbnail');
-    div.appendChild(img);
+    img.loading = 'lazy';
+    img.fetchPriority = 'low'; // Load heavy GIFs last
+    img.style.opacity = '0';
+    img.style.transition = 'opacity 0.3s ease-in-out';
+    img.onload = () => {
+        img.style.opacity = '1';
+        imgWrap.classList.remove('skeleton');
+    };
+    imgWrap.appendChild(img);
+    div.appendChild(imgWrap);
 
     const title = document.createElement('h3');
     title.classList.add('project-title');
@@ -797,10 +906,22 @@ function createComingSoonElement() {
     const div = document.createElement('div');
     div.classList.add('project-div', 'block', 'coming-soon');
 
+    const imgWrap = document.createElement('div');
+    imgWrap.classList.add('project-thumbnail-wrapper', 'skeleton');
+
     const img = document.createElement('img');
     img.setAttribute('src', './sources/images/project-thumbnails/a-venir.gif');
     img.classList.add('project-thumbnail');
-    div.appendChild(img);
+    img.loading = 'lazy';
+    img.fetchPriority = 'low';
+    img.style.opacity = '0';
+    img.style.transition = 'opacity 0.3s ease-in-out';
+    img.onload = () => {
+        img.style.opacity = '1';
+        imgWrap.classList.remove('skeleton');
+    };
+    imgWrap.appendChild(img);
+    div.appendChild(imgWrap);
 
     const title = document.createElement('h3');
     title.classList.add('project-title');
@@ -956,6 +1077,18 @@ document.addEventListener('mouseleave', function(e) {
 /* ---------- ANECDOTES SECTION ---------- */
 
 function getAnecdote() {
+    // Add skeleton while loading
+    const anecdoteTextEl = document.getElementById('anecdote-text');
+    const anecdoteEmojiEl = document.getElementById('anecdote-emoji');
+    const learnMoreEl = document.getElementById('anecdote-en_savoir_plus');
+    
+    anecdoteEmojiEl.classList.add('skeleton');
+    anecdoteEmojiEl.style.color = 'transparent';
+    
+    anecdoteTextEl.innerHTML = '<span class="skeleton-text-line skeleton"></span><span class="skeleton-text-line medium skeleton"></span>';
+    
+    learnMoreEl.style.display = 'none';
+
     // Get anecdotes from JSON file
     let fileURL = "./sources/data/anecdotes.json";
     let request = new XMLHttpRequest();
@@ -965,8 +1098,16 @@ function getAnecdote() {
     request.send();
 
     function showAnecdoteError() {
-        document.getElementById('anecdote-emoji').innerHTML = '❌';
-        document.getElementById('anecdote-text').innerHTML = 'Erreur lors du chargement de l\'anecdote.';
+        const anecdoteEmojiEl = document.getElementById('anecdote-emoji');
+        const anecdoteTextEl = document.getElementById('anecdote-text');
+        
+        anecdoteEmojiEl.classList.remove('skeleton');
+        anecdoteEmojiEl.style.color = '';
+        anecdoteTextEl.classList.remove('skeleton');
+        anecdoteTextEl.querySelectorAll('.skeleton-text-line').forEach(line => line.remove());
+        
+        anecdoteEmojiEl.innerHTML = '❌';
+        anecdoteTextEl.innerHTML = 'Erreur lors du chargement de l\'anecdote.';
     }
 
     request.onerror = showAnecdoteError;
@@ -1022,8 +1163,21 @@ function getAnecdote() {
         }
 
         // Set anecdote
-        document.getElementById('anecdote-text').innerHTML = resolvedText;
-        document.getElementById('anecdote-emoji').innerHTML = emoji;
+        const anecdoteTextEl = document.getElementById('anecdote-text');
+        anecdoteTextEl.innerHTML = resolvedText;
+        
+        const anecdoteEmojiEl = document.getElementById('anecdote-emoji');
+        anecdoteEmojiEl.innerHTML = emoji;
+        
+        // Remove skeleton classes
+        anecdoteTextEl.classList.remove('skeleton');
+        anecdoteEmojiEl.classList.remove('skeleton');
+        anecdoteEmojiEl.style.color = ''; // Restore emoji color if it was made transparent
+        
+        // Remove skeleton lines if they were still there
+        const skeletonLines = anecdoteTextEl.querySelectorAll('.skeleton-text-line');
+        skeletonLines.forEach(line => line.remove());
+
         const learnMoreEl = document.getElementById('anecdote-en_savoir_plus');
         if (learnMoreUrl) {
             learnMoreEl.setAttribute('href', learnMoreUrl);

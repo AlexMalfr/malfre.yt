@@ -198,7 +198,7 @@ input[type='url']:hover {
 .social-icon {
     margin-inline: 3px;
     width: 30px;
-    max-height: 30px;
+    height: 30px;
     filter: brightness(0) invert(80%);
     transition-property: transform, filter, margin-inline;
     transition-duration: 1s;
@@ -213,12 +213,18 @@ input[type='url']:hover {
     transition-timing-function: ease-in-out;
 }
 
+.social-icon.skeleton {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    filter: none; /* override filter: invert(80%) to make skeleton color work correctly */
+}
+
 /* Si l'écran est trop petit pour afficher toutes les icônes sur une seule ligne */
 /* On les espaces suffisemment pour eviter qu'elles ne se poussent d'une ligne sur l'autre au hover en s'agrandissant */
 /* Cela permet aussi de plus facilement les selectionner sur mobile */
 .liens.multi-line .social-icon {
     margin-inline: 5px;
-    width: 35px;
 }
 
 /* Collapse / Expand toggle (displayed as an icon in the list, mobile only) */
@@ -272,7 +278,6 @@ input[type='url']:hover {
     /* Space icons further apart on mobile for easier tapping */
     .liens .social-icon {
         margin-inline: 5px;
-        width: 35px;
     }
 
 }
@@ -476,6 +481,71 @@ input[type='url']:hover {
 
 
 
+/* Skeleton loading */
+@keyframes skeleton-loading {
+    0% { background-color: #e0e0e0; }
+    100% { background-color: #e0e0e0; }
+}
+
+@keyframes skeleton-loading-dark {
+    0% { background-color: #222; }
+    100% { background-color: #222; }
+}
+
+@keyframes skeleton-flare {
+    0% { left: -150%; }
+    100% { left: 150%; }
+}
+
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    animation: skeleton-loading 1.5s infinite ease-in-out !important;
+    border-radius: 5px;
+    color: transparent !important;
+    user-select: none;
+    pointer-events: none;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: skeleton-flare 1.5s infinite ease-in-out !important;
+    visibility: visible !important;
+}
+
+header .skeleton {
+    animation: skeleton-loading-dark 1.5s infinite ease-in-out !important;
+    border-radius: 50%;
+}
+
+header .skeleton::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+img.skeleton {
+    color: transparent !important;
+}
+
+.skeleton > *:not(.skeleton-flare-wrapper, svg) {
+    visibility: hidden !important;
+}
+
+.skeleton-text-line {
+    display: block;
+    height: 1em;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.skeleton-text-line.short { width: 40%; }
+.skeleton-text-line.medium { width: 70%; }
+
 /* Section "à propos de moi" */
 #aboutme-div {
     display: flex;
@@ -490,6 +560,12 @@ input[type='url']:hover {
     width: auto;
     object-fit: contain;
     border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#aboutme-photo[src] {
+    /* Set opacity to 1 once loaded, managed by JS/HTML inline onload */
 }
 
 #aboutme-text {
@@ -695,9 +771,17 @@ input[type='url']:hover {
     padding: 10px;
 }
 
-.project-div .project-thumbnail {
+.project-div .project-thumbnail-wrapper {
     width: 100%;
     aspect-ratio: 4/3;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.project-div .project-thumbnail {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: 10px;
 }
