@@ -58,7 +58,7 @@ body {
     color: #222;
 }
 
-header { margin-bottom: 30px; }
+header { margin-bottom: 30px; overflow-x: clip; }
 footer { margin-top: 30px; }
 
 header, footer {
@@ -195,36 +195,80 @@ input[type='url']:hover {
     margin-block: 10px;
 }
 
+/* The img — fills the wrapper, no sizing of its own */
 .social-icon {
-    margin-inline: 3px;
-    width: 30px;
-    height: 30px;
-    filter: brightness(0) invert(80%);
-    transition-property: transform, filter, margin-inline;
-    transition-duration: 1s;
+    width: 100%;
+    height: 100%;
+    max-height: 30px;
+    object-fit: contain;
+
+    /* vertically centered in its wrapper */
+    display: block;
+    margin: auto;
+    
 }
 
-.social-icon:hover {
+/* The span wrapper — owns sizing, spacing, filter, motion */
+.social-icon-wrapper {
+    display: inline-flex;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+    margin-inline: 3px;
+    width: 30px;
+    height: 30px; /* explicit height prevents oval skeleton on mobile */
+    filter: brightness(0) invert(80%);
+    transition: transform 1s, filter 1s, margin-inline 1s;
+}
+
+.social-icon-wrapper:hover,
+.social-icon-wrapper:focus-visible {
     margin-inline: 20px;
     filter: brightness(0) invert(80%);
     transform: scale(1.5);
-    transition-property: transform, filter, margin-inline;
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;
 }
 
-.social-icon.skeleton {
-    width: 30px;
-    height: 30px;
+.social-icon-wrapper.skeleton {
     border-radius: 50%;
-    filter: none; /* override filter: invert(80%) to make skeleton color work correctly */
+    filter: none; /* override filter to make skeleton color work correctly */
+}
+
+/* Supprimer le surlignage bleu au tap sur mobile */
+.liens a,
+.liens li,
+.icon-wrapper {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Navigation clavier : supprimer les doubles rectangles, afficher un anneau circulaire sur l'icône uniquement */
+.liens a:focus,
+.liens li:focus,
+.icon-wrapper:focus {
+    outline: none;
+}
+
+.liens a:focus-visible .social-icon-wrapper,
+.icon-wrapper[tabindex="0"]:focus-visible {
+    outline: 2px solid rgba(200, 200, 200, 0.85);
+    outline-offset: 5px;
+    border-radius: 50%;
+}
+
+#links-toggle:focus-visible > img {
+    outline: 2px solid rgba(200, 200, 200, 0.85);
+    outline-offset: 5px;
+    border-radius: 50%;
 }
 
 /* Si l'écran est trop petit pour afficher toutes les icônes sur une seule ligne */
 /* On les espaces suffisemment pour eviter qu'elles ne se poussent d'une ligne sur l'autre au hover en s'agrandissant */
 /* Cela permet aussi de plus facilement les selectionner sur mobile */
-.liens.multi-line .social-icon {
+.liens.multi-line .social-icon-wrapper {
     margin-inline: 5px;
+    width: 35px;
+    height: 35px;
 }
 
 /* Collapse / Expand toggle (displayed as an icon in the list, mobile only) */
@@ -276,8 +320,10 @@ input[type='url']:hover {
     }
 
     /* Space icons further apart on mobile for easier tapping */
-    .liens .social-icon {
+    .liens .social-icon-wrapper {
         margin-inline: 5px;
+        width: 35px;
+        height: 35px;
     }
 
 }
@@ -303,7 +349,7 @@ input[type='url']:hover {
     100% { transform: translate(0); filter: brightness(0) invert(80%); }
 }
 
-.social-icon.twitter-glitching {
+.social-icon-wrapper.twitter-glitching {
     animation: twitter-glitch 0.2s steps(1) infinite !important;
 }
 
@@ -322,7 +368,7 @@ input[type='url']:hover {
 
 .dropdown-badge {
     position: absolute;
-    bottom: 3px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(8px);
     font-size: 10px;
@@ -341,12 +387,17 @@ input[type='url']:hover {
     pointer-events: none;
     z-index: 2;
     opacity: 1;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.5s ease, bottom 0.5s ease, transform 0.5s ease, font-size 0.5s ease;
 }
 
 .dropdown:hover .dropdown-badge,
 .dropdown.dropdown-open .dropdown-badge {
     opacity: 0;
+    bottom: -12px;
+    transform: translateX(12px);
+    font-size: 20px;
+    transition: opacity 0.5s ease, bottom 0.5s ease, transform 0.5s ease, font-size 0.5s ease;
+    
 }
 
 .dropdown-content {
@@ -432,8 +483,14 @@ input[type='url']:hover {
     border-bottom: none;
 }
 
-.dropdown-item:hover {
+.dropdown-item:hover,
+.dropdown-item:focus-visible {
     background: #e8e8e8;
+}
+
+.dropdown-item:focus-visible {
+    outline: 2px solid #555;
+    outline-offset: -2px;
 }
 
 .dropdown-item img, input.dropdown-item[type="image"] {
@@ -445,7 +502,9 @@ input[type='url']:hover {
 }
 
 .dropdown-item:hover img,
-.dropdown-item:hover input.dropdown-item[type="image"] {
+.dropdown-item:focus-visible img,
+.dropdown-item:hover input.dropdown-item[type="image"],
+.dropdown-item:focus-visible input.dropdown-item[type="image"] {
     opacity: 1;
 }
 
@@ -676,17 +735,21 @@ img.skeleton {
     text-decoration: none;
     
     border: 2px solid #000;
-    background-color: none;
+    background-color: transparent;
     color: #000;
     
-    transition-property: background-color, color;
-    transition-duration: 0.5s;
-    transition-timing-function: ease-in-out;
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
 }
 
-.button:hover {
+.button:hover,
+.button:focus-visible {
     background-color: #000;
     color: #FFF;
+}
+
+.button:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 3px;
 }
 
 .buttons .link {
@@ -839,11 +902,28 @@ img.skeleton {
     transition: opacity 0.3s ease, filter 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.project-div.coming-soon:hover {
+.project-div.coming-soon:hover,
+.project-div.coming-soon:focus-visible {
     opacity: 1;
     filter: grayscale(0%);
     background-color: #fff;
     border-color: #888;
+}
+
+.project-div.coming-soon:focus-visible {
+    outline: 2px solid #888;
+    outline-offset: 3px;
+}
+
+/* Keyboard focus for project links */
+#projects-timeline > a:focus {
+    outline: none;
+}
+
+#projects-timeline > a:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: -2px;
+    border-radius: 10px;
 }
 
 .project-div.coming-soon .project-description {
@@ -991,6 +1071,16 @@ img.skeleton {
 #refresh:active {
     filter: invert(90%); /* noir -> blanc */
     transition-duration: 0.1s;
+}
+
+#refresh:focus {
+    outline: none;
+}
+
+#refresh:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    outline-offset: 4px;
 }
 
 #anecdote-en_savoir_plus {

@@ -108,7 +108,7 @@
         <h2 id="aboutme">À propos de moi</h2>
     
         <div id="aboutme-div">
-            <div id="aboutme-photo-container" class="skeleton" style="position: relative; width: 124px; height: 150px; border-radius: 20px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div id="aboutme-photo-container" class="skeleton" style="position: relative; border-radius: 20px; overflow: hidden; display: flex; flex-shrink: 0;">
                 <svg id="aboutme-photo-skeleton" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0;" viewBox="0 0 124 150" preserveAspectRatio="xMidYMid slice">
                     <rect width="124" height="150" fill="transparent" />
                     <path
@@ -173,7 +173,7 @@
                 </div>
             </div>
             
-            <img id="refresh" src="./sources/images/icons/refresh.svg" alt="Une autre !" onclick="getAnecdote()"/>
+            <img id="refresh" src="./sources/images/icons/refresh.svg" alt="Une autre !" onclick="getAnecdote()" tabindex="0" role="button"/>
             <a href='#' id="anecdote-en_savoir_plus">En savoir plus</a>
         </div>
 

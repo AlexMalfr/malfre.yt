@@ -206,10 +206,8 @@ function createIconWithSkeleton(src, alt, iconType = 'social') {
     const img = document.createElement('img');
     
     if (iconType === 'social') {
-        wrapper.classList.add('social-icon', 'icon');
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
+        wrapper.classList.add('social-icon-wrapper');
+        img.classList.add('social-icon');
     } else if (iconType === 'dropdown') {
         wrapper.style.width = '20px';
         wrapper.style.height = '20px';
@@ -241,11 +239,25 @@ function createIconWithSkeleton(src, alt, iconType = 'social') {
     return wrapper;
 }
 
+function expandLinksIfCollapsed() {
+    const liensDiv = document.querySelector('.liens');
+    if (liensDiv && !liensDiv.classList.contains('links-expanded')) {
+        liensDiv.classList.add('links-expanded');
+        const toggle = document.getElementById('links-toggle');
+        if (toggle) {
+            toggle.title = 'Afficher moins de liens';
+            toggle.setAttribute('aria-label', 'Afficher moins de liens');
+        }
+        checkHeaderIconsOverflow();
+    }
+}
+
 function createLinkElement(link) {
     const li = document.createElement('li');
 
     if (!link.important) {
         li.classList.add('link-secondary');
+        li.addEventListener('focusin', expandLinksIfCollapsed);
     }
 
     if (link.easterEgg) {
@@ -271,6 +283,11 @@ function createLinkElement(link) {
             iconWrapper.appendChild(mainLink);
         } else {
             iconWrapper.appendChild(iconContainer);
+            // Make focusable for keyboard nav (no <a> wrapper)
+            iconWrapper.tabIndex = 0;
+            iconWrapper.setAttribute('role', 'button');
+            iconWrapper.setAttribute('aria-label', link.name);
+            iconWrapper.setAttribute('aria-haspopup', 'true');
         }
 
         const badge = document.createElement('span');
@@ -394,30 +411,75 @@ function toggleLinksExpanded() {
 /* ---------- DROPDOWNS ---------- */
 
 function setupDropdowns() {
-    const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    // (pointer: coarse) = touchscreen/stylus; more reliable than ontouchstart / maxTouchPoints
+    const isCoarsePointer = () => window.matchMedia('(pointer: coarse)').matches;
 
     const dropdowns = document.querySelectorAll('.dropdown');
 
-    // On mobile: tap icon to toggle dropdown, prevent navigating away
+    // On touch: tap icon to toggle dropdown, prevent navigating away
     dropdowns.forEach(dropdown => {
         const mainLink = dropdown.querySelector('.icon-wrapper a');
         if (mainLink) {
             mainLink.addEventListener('click', function (e) {
-                if (isTouchDevice()) {
+                if (isCoarsePointer()) {
                     e.preventDefault();
                     toggleDropdown(dropdown);
                 }
             });
         } else {
             // No link wrapper (e.g. Dons, Email) — icon itself toggles
-            const icon = dropdown.querySelector('.icon-wrapper .social-icon');
+            const icon = dropdown.querySelector('.icon-wrapper .social-icon-wrapper');
             if (icon) {
                 icon.style.cursor = 'pointer';
                 icon.addEventListener('click', function () {
-                    if (isTouchDevice()) toggleDropdown(dropdown);
+                    if (isCoarsePointer()) toggleDropdown(dropdown);
                 });
             }
         }
+    });
+
+    // Mobile scrolling should close dropdowns
+    window.addEventListener('scroll', function () {
+        if (isTouchDevice()) {
+            document.querySelectorAll('.dropdown.dropdown-open').forEach(dd => dd.classList.remove('dropdown-open'));
+        }
+    }, { passive: true });
+
+    // Keyboard nav: open dropdown on focus, close when focus leaves entirely
+    // Only for fine-pointer devices (mouse/keyboard) — on touch, the click handler handles open/close
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('focusin', function() {
+            if (isCoarsePointer()) return;
+            dropdown.classList.add('dropdown-open');
+            clampDropdown(dropdown);
+        });
+
+        dropdown.addEventListener('focusout', function(e) {
+            if (!dropdown.contains(e.relatedTarget)) {
+                dropdown.classList.remove('dropdown-open');
+            }
+        });
+
+        // Enter/Space on icon-wrapper trigger (no <a>) moves focus to first dropdown item
+        const iconWrapper = dropdown.querySelector('.icon-wrapper[tabindex]');
+        if (iconWrapper) {
+            iconWrapper.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const firstItem = dropdown.querySelector('.dropdown-item');
+                    if (firstItem) firstItem.focus();
+                }
+            });
+        }
+
+        // Escape closes dropdown and returns focus to trigger
+        dropdown.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                dropdown.classList.remove('dropdown-open');
+                const trigger = dropdown.querySelector('.icon-wrapper a') || dropdown.querySelector('.icon-wrapper[tabindex]');
+                if (trigger) trigger.focus();
+            }
+        });
     });
 
     // Mobile and desktop scrolling should close dropdowns
@@ -619,7 +681,7 @@ function setupTwitterEasterEgg() {
     const twitterLi = document.querySelector('[data-easter-egg="twitter-x-glitch"]');
     if (!twitterLi) return;
 
-    const twitterIconWrapper = twitterLi.querySelector('.social-icon');
+    const twitterIconWrapper = twitterLi.querySelector('.social-icon-wrapper');
     if (!twitterIconWrapper) return;
     
     // The actual image is correctly referenced via ._img property or querySelector
@@ -896,6 +958,7 @@ function createProjectElement(project) {
         const a = document.createElement('a');
         a.setAttribute('href', url);
         a.appendChild(div);
+        a.addEventListener('focus', function() { scrollProjectIntoView(a); });
         return a;
     }
     return div;
@@ -905,6 +968,7 @@ function createComingSoonElement() {
     // Create a "coming soon" element at the end of the projects timeline
     const div = document.createElement('div');
     div.classList.add('project-div', 'block', 'coming-soon');
+    div.tabIndex = 0;
 
     const imgWrap = document.createElement('div');
     imgWrap.classList.add('project-thumbnail-wrapper', 'skeleton');
@@ -933,6 +997,8 @@ function createComingSoonElement() {
     description.appendChild(document.createTextNode("Bientôt d'autres projets sur ce site !"));
     div.appendChild(description);
 
+    div.addEventListener('focus', function() { scrollProjectIntoView(div); });
+
     return div;
 }
 
@@ -940,6 +1006,19 @@ function removeLoadingDiv() {
     const loadingDiv = document.getElementById('projects-loading');
     if (loadingDiv) {
         loadingDiv.remove();
+    }
+}
+
+function scrollProjectIntoView(el) {
+    const timeline = document.getElementById('projects-timeline');
+    if (!timeline) return;
+    const padding = 15;
+    const timelineRect = timeline.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    if (elRect.left < timelineRect.left + padding) {
+        timeline.scrollLeft += elRect.left - timelineRect.left - padding;
+    } else if (elRect.right > timelineRect.right - padding) {
+        timeline.scrollLeft += elRect.right - timelineRect.right + padding;
     }
 }
 
@@ -1190,3 +1269,10 @@ function getAnecdote() {
 }
 
 getAnecdote();
+
+document.getElementById('refresh').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        getAnecdote();
+    }
+});
