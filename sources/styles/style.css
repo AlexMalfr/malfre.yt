@@ -685,8 +685,8 @@ input[type='url']:hover {
 /* Projet */
 .project-div {
     display: inline-block;
-    min-width: 250px;
-    max-width: 300px;
+    min-width: 300px;
+    max-width: 400px;
     min-height: 150px;
     margin: 0px 5px;
     transition-property: transform;
@@ -781,14 +781,37 @@ input[type='url']:hover {
     margin: 3px;
 }
 
-/* Sur téléphone, la scrollbar est plus grande */
+/* Sur téléphone : scrollbar cachée, snap activé */
 @media (max-width: 700px) {
-    #projects-timeline::-webkit-scrollbar {
-        height: 20px;
+    /* Hide scrollbar — not needed with scroll-snapping */
+    #projects-timeline {
+        scrollbar-width: none; /* Firefox */
+        scroll-snap-type: x mandatory;
     }
 
-    #projects-timeline::-webkit-scrollbar-thumb {
-        border-radius: 20px;
+    #projects-timeline::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Size the direct flex children (the <a> wrappers and bare coming-soon div) */
+    #projects-timeline > a,
+    #projects-timeline > .project-div {
+        scroll-snap-align: center;
+        flex-shrink: 0;
+        width: calc(100vw - 80px); /* ~10vw peek on each side on a 390px phone */
+    }
+
+    /* project-div fills its <a> parent */
+    .project-div {
+        min-width: 0;
+        max-width: none;
+        width: 100%;
+    }
+
+    /* Narrow gradient on mobile so it only covers the peeking adjacent card, not the current one */
+    #projects-timeline-wrapper::before,
+    #projects-timeline-wrapper::after {
+        width: 20px;
     }
 }
 
