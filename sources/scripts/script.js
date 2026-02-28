@@ -850,6 +850,102 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('resize', scrollToLastProject);
 window.addEventListener('resize', checkHeaderIconsOverflow);
 
+/* ---------- PROJECTS AUTOMATIC SCROLLING ---------- */
+
+let scrollDirection = 0;
+let scrollSpeed = 0;
+let autoScrollFrameId = null;
+let lastTimestamp = null;
+let fractionalScroll = 0;
+
+function autoScrollProjects(timestamp) {
+    if (scrollDirection !== 0) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const deltaTime = timestamp - lastTimestamp;
+        lastTimestamp = timestamp;
+
+        // Cap deltaTime to avoid massive jumps if the tab becomes inactive
+        const dt = Math.min(deltaTime, 50);
+
+        const timeline = document.getElementById('projects-timeline');
+        if (timeline) {
+            // Temporarily disable any CSS scroll snapping or smooth behavior that causes conflicts
+            timeline.style.scrollBehavior = 'auto';
+            timeline.style.scrollSnapType = 'none';
+
+            // Add to our exact precision accumulator based on pixels per second
+            fractionalScroll += scrollDirection * (scrollSpeed * (dt / 1000));
+            
+            // Apply only the integer part to the actual scrollable element
+            const intStep = Math.trunc(fractionalScroll);
+            if (intStep !== 0) {
+                timeline.scrollLeft += intStep;
+                fractionalScroll -= intStep; // Keep the fractional remainder
+            }
+        }
+        autoScrollFrameId = requestAnimationFrame(autoScrollProjects);
+    } else {
+        const timeline = document.getElementById('projects-timeline');
+        if (timeline) {
+            timeline.style.scrollBehavior = '';
+            timeline.style.scrollSnapType = '';
+        }
+        autoScrollFrameId = null;
+        lastTimestamp = null;
+        fractionalScroll = 0;
+    }
+}
+
+document.addEventListener('mousemove', function(e) {
+    // Only apply on devices with a fine pointer (mouse), not touchscreens
+    if (!window.matchMedia('(pointer: fine)').matches) {
+        scrollDirection = 0;
+        return;
+    }
+
+    const section = document.getElementById('projects-section');
+    if (!section) return;
+
+    const rect = section.getBoundingClientRect();
+    const isVerticallyOver = e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+    if (isVerticallyOver) {
+        const x = e.clientX;
+        const width = window.innerWidth;
+        const DETECTION_ZONE = Math.max(250, width * 0.20); // Much wider detection zone (min 250px)
+        const MAX_SPEED = 1200; // Max scroll speed in pixels per second
+
+        if (x < DETECTION_ZONE) {
+            scrollDirection = -1;
+            // Max speed reached at 50% of the detection zone
+            const ratio = Math.max(0, (DETECTION_ZONE - x) / (DETECTION_ZONE / 2));
+            scrollSpeed = Math.min(1, ratio) * MAX_SPEED;
+        } else if (width - x < DETECTION_ZONE) {
+            scrollDirection = 1;
+            const distToEdge = width - x;
+            const ratio = Math.max(0, (DETECTION_ZONE - distToEdge) / (DETECTION_ZONE / 2));
+            scrollSpeed = Math.min(1, ratio) * MAX_SPEED;
+        } else {
+            scrollDirection = 0;
+        }
+
+        if (scrollDirection !== 0 && !autoScrollFrameId) {
+            lastTimestamp = null;
+            fractionalScroll = 0;
+            autoScrollFrameId = requestAnimationFrame(autoScrollProjects);
+        }
+    } else {
+        scrollDirection = 0;
+    }
+});
+
+document.addEventListener('mouseleave', function(e) {
+    // Stop scrolling if the mouse leaves the window vertically
+    if (e.clientY <= 0 || e.clientY >= window.innerHeight - 1) {
+        scrollDirection = 0;
+    }
+});
+
 
 /* ---------- ANECDOTES SECTION ---------- */
 
