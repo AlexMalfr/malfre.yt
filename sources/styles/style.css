@@ -456,7 +456,7 @@ input[type='url']:hover {
 }
 
 /* Mobile dropdown: centered overlay */
-@media (max-width: 700px) {
+/* @media (max-width: 700px) {
     .dropdown-content {
         position: fixed;
         top: auto;
@@ -472,7 +472,7 @@ input[type='url']:hover {
     .dropdown-content-safety {
         display: none;
     }
-}
+} */
 
 
 

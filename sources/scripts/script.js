@@ -385,6 +385,12 @@ function setupDropdowns() {
         }
     });
 
+    // Mobile and desktop scrolling should close dropdowns
+    // (User requested behavior: "peut-être sur desktop aussi mais ça n'est pas génant")
+    window.addEventListener('scroll', function () {
+        document.querySelectorAll('.dropdown.dropdown-open').forEach(dd => dd.classList.remove('dropdown-open'));
+    }, { passive: true });
+
     // Close dropdowns when clicking outside
     document.addEventListener('click', function (e) {
         dropdowns.forEach(dd => {
@@ -421,14 +427,14 @@ function clampDropdown(dropdown) {
     content.style.transform = '';
 
     // On mobile (fixed positioning), always center
-    if (window.innerWidth <= 700) {
+    /* if (window.innerWidth <= 700) {
         content.style.left = '50%';
         content.style.transform = 'translateX(-50%)';
         // Vertically position below the icon
         const rect = dropdown.getBoundingClientRect();
         content.style.top = (rect.bottom + 8) + 'px';
         return;
-    }
+    } */
 
     // Desktop: start centered, then clamp
     content.style.left = '50%';
