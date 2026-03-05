@@ -231,9 +231,15 @@ function initUABanners() {
         });
     }
 
-    // --- Archive.org Wayback Machine crawler ---
-    if (/archive\.org_bot|wayback/i.test(ua) || debug) {
-        const captureDate = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    // --- Archive.org Wayback Machine ---
+    // Detected via URL (the page is served from web.archive.org)
+    // not UA because JS runs in the visitor's browser, not the crawler's
+    // Wayback Machine URLs look like: https://web.archive.org/web/YYYYMMDDhhmmss/https://...
+    const waybackMatch = window.location.href.match(/web\.archive\.org\/web\/(\d{4})(\d{2})(\d{2})\d+\//);
+    if (waybackMatch) {
+        const [, year, month, day] = waybackMatch;
+        const captureDate = new Date(+year, +month - 1, +day)
+            .toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         createBanner({
             id: 'archiveorg',
             color: '#ab2e33',
@@ -1089,7 +1095,11 @@ function getAge() {
         birthdayText = ` <b>(C'était mon anniversaire il y a ${diffDays} jours ! 🎂)</b>`;
     }
 
-    document.getElementById('aboutme-age').innerHTML = `${age} ans${birthdayText}`;
+    // For crawlers, show birth date in addition to age, so that (maybe) search engines like Google can pick it up
+    const birthDateText = isCrawler()
+        ? ` <span style="font-weight:normal;font-size:0.9em">(né le 26 février 2003)</span>` : '';
+    
+    document.getElementById('aboutme-age').innerHTML = `${age} ans${birthDateText}${birthdayText}`;
 }
 
 getAge();

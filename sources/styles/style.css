@@ -619,6 +619,10 @@ img.skeleton {
     gap: 30px;
 }
 
+/* Photo container size is set inline (max-height, aspect-ratio, align-self) for skeleton loading */
+#aboutme-photo-container {
+}
+
 #aboutme-photo {
     max-height: 150px;
     width: auto;
