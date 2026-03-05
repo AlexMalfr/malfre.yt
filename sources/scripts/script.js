@@ -1504,6 +1504,74 @@ document.addEventListener('mouseleave', function(e) {
 
 /* ---------- ANECDOTES SECTION ---------- */
 
+/**
+ * Resolves dynamic date/duration placeholders in an anecdote text string.
+ * Supported formats:
+ *   {days:ISO8601date}                          => number of days since the date
+ *   {timedelta_days_as_seconds_humanized:date}  => humanized as if days were seconds
+ *   {timedelta_years_humanized:date}            => humanized duration floored to the year
+ */
+function resolveAnecdotePlaceholders(text) {
+    let resolved = text;
+    const placeholders = resolved.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/g);
+    if (placeholders) {
+        placeholders.forEach(placeholder => {
+            const [, type, dateStr] = placeholder.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/);
+            const nbDays = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
+            if (type === 'days') {
+                resolved = resolved.replace(placeholder, nbDays);
+            } else if (type === 'timedelta_days_as_seconds_humanized') {
+                resolved = resolved.replace(placeholder, humanizeDurationSeconds(nbDays));
+            } else if (type === 'timedelta_years_humanized') {
+                resolved = resolved.replace(placeholder, humanizeDurationDays(nbDays, 1));
+            }
+        });
+    }
+    return resolved;
+}
+
+/**
+ * Returns true if the current visitor looks like a content crawler / indexing bot.
+ * These UAs execute JS but don't need the interactive widget — we show them all
+ * anecdotes at once so every anecdote can be indexed by search engines.
+ */
+function isCrawler() {
+    return /Googlebot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|Exabot|facebot|facebookexternalhit|Twitterbot|LinkedInBot|Applebot|AhrefsBot|SemrushBot|MJ12bot|DotBot|rogerbot|PetalBot|Bytespider|ClaudeBot|Claude-Web|Anthropic|PerplexityBot|CCBot|GPTBot|OAI-SearchBot|cohere-ai|YouBot/i.test(navigator.userAgent);
+}
+
+/**
+ * For crawlers: fetches all anecdotes and renders them as a plain list so that
+ * every anecdote text is present in the DOM and can be indexed.
+ */
+function initCrawlerAnecdotes() {
+    const section = document.getElementById('anecdote-section');
+    const widget  = document.getElementById('anecdote-div');
+    if (widget) widget.style.display = 'none';
+
+    fetch('./sources/data/anecdotes.json')
+        .then(res => res.json())
+        .then(anecdotes => {
+            const ul = document.createElement('ul');
+            ul.id = 'anecdotes-all';
+            anecdotes.forEach(anecdote => {
+                const li = document.createElement('li');
+                const resolved = resolveAnecdotePlaceholders(anecdote.text || '');
+                li.innerHTML = `${anecdote.emoji || ''} ${resolved}`;
+                if (anecdote.learn_more_url) {
+                    const sep = document.createTextNode(' — ');
+                    const a = document.createElement('a');
+                    a.href = anecdote.learn_more_url;
+                    a.textContent = anecdote.learn_more_text || 'En savoir plus';
+                    li.appendChild(sep);
+                    li.appendChild(a);
+                }
+                ul.appendChild(li);
+            });
+            if (section) section.appendChild(ul);
+        })
+        .catch(() => { /* silently ignore for crawlers */ });
+}
+
 function getAnecdote() {
     // Add skeleton while loading
     const anecdoteTextEl = document.getElementById('anecdote-text');
@@ -1567,28 +1635,7 @@ function getAnecdote() {
         const learnMoreUrl = anecdote['learn_more_url'] || null;
         const learnMoreText = anecdote['learn_more_text'] || 'En savoir plus';
 
-        // Replace placeholders : durations, dates, etc (dynamic content that needs to be up-to-date)
-        // Format :
-        // {days:ISO8601date} => number of days between the given date and today
-        // {timedelta_days_as_seconds_humanized:ISO8601date} => humanized duration for 1 day = 1 second, 2 days = 2 seconds, ..., 1 year = 6 minutes and 5 days, etc
-        // {timedelta_years_humanized:ISO8601date} => humanized duration between the given date and today (1 day, 2 days, 1 month, 1 year, etc) floored to the year
-        let resolvedText = text;
-        let datePlaceholders = resolvedText.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/g);
-        if (datePlaceholders) {
-            datePlaceholders.forEach(placeholder => {
-                let [_, type, dateStr] = placeholder.match(/{(days|timedelta_days_as_seconds_humanized|timedelta_years_humanized):([^}]+)}/);
-                const date = new Date(dateStr);
-                const today = new Date();
-                const nbDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-                if (type === 'days') {
-                    resolvedText = resolvedText.replace(placeholder, nbDays);
-                } else if (type === 'timedelta_days_as_seconds_humanized') {
-                    resolvedText = resolvedText.replace(placeholder, humanizeDurationSeconds(nbDays)); // use the number of days as a number of seconds - useful for 1SE duration calculation
-                } else if (type === 'timedelta_years_humanized') {
-                    resolvedText = resolvedText.replace(placeholder, humanizeDurationDays(nbDays, 1)); // humanize the duration in years, floored to the year
-                }
-            });
-        }
+        const resolvedText = resolveAnecdotePlaceholders(text);
 
         // Set anecdote
         const anecdoteTextEl = document.getElementById('anecdote-text');
@@ -1617,7 +1664,13 @@ function getAnecdote() {
     }
 }
 
-getAnecdote();
+// Crawlers get all anecdotes at once so every anecdote can be indexed.
+// Normal visitors get the interactive random-anecdote widget.
+if (isCrawler()) {
+    initCrawlerAnecdotes();
+} else {
+    getAnecdote();
+}
 
 document.getElementById('refresh').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') {
