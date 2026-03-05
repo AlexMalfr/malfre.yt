@@ -1,14 +1,19 @@
 @import "https://www.malfre.yt/sources/global.css";
 
 
-/* Translate banner */
-#translate-banner {
-    display: none; /* shown by JS when needed */
+/* Banners (generic stacking system) */
+#banners-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.site-banner {
+    display: flex;
     width: 100%;
     box-sizing: border-box;
     padding: 10px 50px;
-    background-color: #1a73e8;
-    color: white;
+    /* color is set dynamically by JS based on background luminance */
     align-items: center;
     justify-content: center;
     gap: 16px;
@@ -17,28 +22,28 @@
     text-align: center;
 }
 
-#translate-banner-link {
-    color: white;
+.site-banner a {
+    /* color inherited from banner element (set by JS) */
     font-weight: bold;
     text-decoration: underline;
     text-underline-offset: 0.15em;
 }
 
-#translate-banner-link:hover {
-    color: rgba(255, 255, 255, 0.8);
-    transition-property: color;
+.site-banner a:hover {
+    opacity: 0.75;
+    transition-property: opacity;
     transition-duration: 0.3s;
     transition-timing-function: ease-in-out;
 }
 
-#translate-banner-close {
+.site-banner .banner-close {
     position: absolute;
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: white;
+    /* color inherited from banner element (set by JS) */
     font-size: 1.1em;
     cursor: url("../images/cursors/cursor_hover.svg"), pointer;
     padding: 0 6px;
@@ -46,7 +51,7 @@
     opacity: 0.8;
 }
 
-#translate-banner-close:hover {
+.site-banner .banner-close:hover {
     opacity: 1;
 }
 
