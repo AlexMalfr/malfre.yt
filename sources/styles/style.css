@@ -120,6 +120,13 @@ a:hover {
     transition-timing-function: ease-in-out;
 }
 
+a:focus-visible {
+    color: #888;
+    transition-property: color;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+}
+
 
 
 /* Texte */
@@ -764,6 +771,8 @@ img.skeleton {
 .button:focus-visible {
     background-color: #000;
     color: #FFF;
+
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
 .button:focus-visible {
