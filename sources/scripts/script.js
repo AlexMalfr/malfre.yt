@@ -494,6 +494,142 @@ function checkHeaderIconsOverflow() {
     }
 }
 
+function setupHeaderDockEffect() {
+    const container = document.getElementById('social-links');
+    if (!container || container.dataset.dockReady === 'true') return;
+
+    container.dataset.dockReady = 'true';
+
+    const linksContainer = container.closest('.liens');
+    const finePointer = window.matchMedia('(pointer: fine)');
+    const mobileViewport = window.matchMedia('(max-width: 700px)');
+    let pointerPosition = null;
+    let animationFrameId = null;
+
+    function dockEnabled() {
+        return finePointer.matches && !mobileViewport.matches && !linksContainer?.classList.contains('multi-line');
+    }
+
+    function getDockIcons() {
+        return Array.from(container.querySelectorAll('.social-icon-wrapper')).filter(icon => {
+            return !icon.classList.contains('skeleton') && icon.offsetParent !== null;
+        });
+    }
+
+    function setDockState(icon, intensity) {
+        const scale = 1 + intensity * 0.6;
+        const spacing = intensity * 10;
+        const invert = 62 + intensity * 32 + Math.pow(intensity, 4) * 10;
+        const iconWrapper = icon.closest('.icon-wrapper');
+
+        icon.style.setProperty('--dock-scale', scale.toFixed(3));
+        icon.style.setProperty('--dock-spacing', `${spacing.toFixed(2)}px`);
+        icon.style.setProperty('--dock-invert', `${Math.min(invert, 100).toFixed(2)}%`);
+
+        if (iconWrapper) {
+            const badgeShift = 2 + intensity * 10;
+            const badgeShiftY = intensity * 8;
+            const badgeScale = 1 + intensity * 0.22;
+            iconWrapper.style.setProperty('--dock-badge-shift', `${badgeShift.toFixed(2)}px`);
+            iconWrapper.style.setProperty('--dock-badge-shift-y', `${badgeShiftY.toFixed(2)}px`);
+            iconWrapper.style.setProperty('--dock-badge-scale', badgeScale.toFixed(3));
+        }
+    }
+
+    function resetDockEffect() {
+        getDockIcons().forEach(icon => {
+            const iconWrapper = icon.closest('.icon-wrapper');
+            icon.style.removeProperty('--dock-scale');
+            icon.style.removeProperty('--dock-spacing');
+            icon.style.removeProperty('--dock-invert');
+
+            if (iconWrapper) {
+                iconWrapper.style.removeProperty('--dock-badge-shift');
+                iconWrapper.style.removeProperty('--dock-badge-shift-y');
+                iconWrapper.style.removeProperty('--dock-badge-scale');
+            }
+        });
+    }
+
+    function updateDockEffect() {
+        animationFrameId = null;
+
+        if (!dockEnabled() || !pointerPosition) {
+            resetDockEffect();
+            return;
+        }
+
+        const icons = getDockIcons();
+        const maxHorizontalDistance = 140;
+
+        icons.forEach(icon => {
+            const rect = icon.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const horizontalDistance = Math.abs(pointerPosition.x - centerX);
+            const verticalDistance = Math.abs(pointerPosition.y - centerY);
+            const verticalReach = Math.max(rect.height * 2.4, 80);
+
+            if (horizontalDistance >= maxHorizontalDistance || verticalDistance >= verticalReach) {
+                setDockState(icon, 0);
+                return;
+            }
+
+            const horizontalRatio = horizontalDistance / maxHorizontalDistance;
+            const verticalRatio = verticalDistance / verticalReach;
+            const horizontalIntensity = Math.cos(horizontalRatio * Math.PI / 2) ** 2;
+            const verticalIntensity = 1 - verticalRatio;
+            const intensity = Math.max(0, horizontalIntensity * verticalIntensity);
+
+            setDockState(icon, intensity);
+        });
+    }
+
+    function scheduleDockUpdate() {
+        if (animationFrameId !== null) return;
+        animationFrameId = window.requestAnimationFrame(updateDockEffect);
+    }
+
+    container.addEventListener('pointermove', function (event) {
+        if (!dockEnabled() || (event.pointerType && event.pointerType !== 'mouse' && event.pointerType !== 'pen')) {
+            return;
+        }
+
+        pointerPosition = { x: event.clientX, y: event.clientY };
+        scheduleDockUpdate();
+    });
+
+    container.addEventListener('pointerleave', function () {
+        pointerPosition = null;
+        scheduleDockUpdate();
+    });
+
+    window.addEventListener('scroll', function () {
+        if (!pointerPosition) return;
+        scheduleDockUpdate();
+    }, { passive: true });
+
+    window.addEventListener('resize', function () {
+        if (!pointerPosition) {
+            resetDockEffect();
+            return;
+        }
+
+        scheduleDockUpdate();
+    });
+
+    finePointer.addEventListener('change', function (event) {
+        if (event.matches && dockEnabled()) return;
+        pointerPosition = null;
+        resetDockEffect();
+    });
+
+    mobileViewport.addEventListener('change', function () {
+        pointerPosition = null;
+        resetDockEffect();
+    });
+}
+
 
 /* ---------- SOCIAL LINKS (dynamic from JSON) ---------- */
 
@@ -517,6 +653,7 @@ function generateSocialLinks() {
             ul.appendChild(createToggleLi());
 
             checkHeaderIconsOverflow();
+            setupHeaderDockEffect();
             setupTwitterEasterEgg();
             setupDropdowns();
         })

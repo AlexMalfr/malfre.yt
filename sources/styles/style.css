@@ -232,24 +232,27 @@ input[type='url']:hover {
 
 /* The span wrapper — owns sizing, spacing, filter, motion */
 .social-icon-wrapper {
+    --dock-scale: 1;
+    --dock-spacing: 0px;
+    --dock-base-margin: 3px;
+    --dock-invert: 80%;
     display: inline-flex;
     vertical-align: middle;
     justify-content: center;
     align-items: center;
-    margin-inline: 3px;
+    margin-inline: calc(var(--dock-base-margin) + var(--dock-spacing));
     width: 30px;
     height: 30px; /* explicit height prevents oval skeleton on mobile */
-    filter: brightness(0) invert(80%);
-    transition: transform 1s, filter 1s, margin-inline 1s;
+    filter: brightness(0) invert(var(--dock-invert));
+    transform: scale(var(--dock-scale));
+    transform-origin: center center;
+    will-change: transform;
+    transition: transform 0.18s ease-out, filter 0.18s ease-out, margin-inline 0.18s ease-out;
 }
 
 .social-icon-wrapper:hover,
 .social-icon-wrapper:focus-visible {
-    margin-inline: 20px;
-    filter: brightness(0) invert(80%);
-    transform: scale(1.5);
-    transition-duration: 0.5s;
-    transition-timing-function: ease-in-out;
+    filter: brightness(0) invert(var(--dock-invert));
 }
 
 .social-icon-wrapper.skeleton {
@@ -273,6 +276,9 @@ input[type='url']:hover {
 
 .liens a:focus-visible .social-icon-wrapper,
 .icon-wrapper[tabindex="0"]:focus-visible {
+    --dock-scale: 1.18;
+    --dock-spacing: 4px;
+    --dock-invert: 88%;
     outline: 2px solid rgba(200, 200, 200, 0.85);
     outline-offset: 5px;
     border-radius: 50%;
@@ -288,9 +294,19 @@ input[type='url']:hover {
 /* On les espaces suffisemment pour eviter qu'elles ne se poussent d'une ligne sur l'autre au hover en s'agrandissant */
 /* Cela permet aussi de plus facilement les selectionner sur mobile */
 .liens.multi-line .social-icon-wrapper {
+    --dock-base-margin: 5px;
     margin-inline: 5px;
     width: 35px;
     height: 35px;
+}
+
+.liens.multi-line .social-icon-wrapper:hover,
+.liens.multi-line .social-icon-wrapper:focus-visible {
+    margin-inline: 5px;
+    filter: brightness(0) invert(80%);
+    transform: scale(1.5);
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
 }
 
 /* Collapse / Expand toggle (displayed as an icon in the list, mobile only) */
@@ -343,6 +359,7 @@ input[type='url']:hover {
 
     /* Space icons further apart on mobile for easier tapping */
     .liens .social-icon-wrapper {
+        --dock-base-margin: 5px;
         margin-inline: 5px;
         width: 35px;
         height: 35px;
@@ -383,6 +400,10 @@ input[type='url']:hover {
 
 /* Icon wrapper for "+" badge positioning */
 .icon-wrapper {
+    --dock-badge-shift: 0px;
+    --dock-badge-shift-y: 0px;
+    --dock-badge-scale: 1;
+    --dock-badge-base-size: 10px;
     position: relative;
     display: inline-block;
     vertical-align: middle;
@@ -392,8 +413,9 @@ input[type='url']:hover {
     position: absolute;
     bottom: 0px;
     left: 50%;
-    transform: translateX(8px);
-    font-size: 10px;
+    transform: translateX(calc(8px + var(--dock-badge-shift))) translateY(var(--dock-badge-shift-y)) scale(var(--dock-badge-scale));
+    transform-origin: center center;
+    font-size: calc(var(--dock-badge-base-size) * var(--dock-badge-scale));
     font-weight: 900;
     line-height: 1;
     color: #CCC;
@@ -416,10 +438,39 @@ input[type='url']:hover {
 .dropdown.dropdown-open .dropdown-badge {
     opacity: 0;
     bottom: -12px;
-    transform: translateX(12px);
-    font-size: 20px;
+    transform: translateX(calc(12px + var(--dock-badge-shift))) translateY(calc(2px + var(--dock-badge-shift-y))) scale(calc(1.1 * var(--dock-badge-scale)));
+    font-size: calc(20px * var(--dock-badge-scale));
     transition: opacity 0.5s ease, bottom 0.5s ease, transform 0.5s ease, font-size 0.5s ease;
     
+}
+
+@media (max-width: 700px), (pointer: coarse), (hover: none) {
+    .social-icon-wrapper {
+        --dock-scale: 1 !important;
+        --dock-spacing: 0px !important;
+        transform: scale(1);
+        transition: transform 1s, filter 1s, margin-inline 1s;
+    }
+
+    .social-icon-wrapper:hover,
+    .social-icon-wrapper:focus-visible {
+        margin-inline: var(--dock-base-margin);
+        filter: brightness(0) invert(80%);
+        transform: scale(1.5);
+        transition-duration: 0.5s;
+        transition-timing-function: ease-in-out;
+    }
+
+    .liens a:focus-visible .social-icon-wrapper,
+    .icon-wrapper[tabindex="0"]:focus-visible {
+        --dock-spacing: 0px;
+    }
+
+    .icon-wrapper {
+        --dock-badge-shift: 0px !important;
+        --dock-badge-shift-y: 0px !important;
+        --dock-badge-scale: 1 !important;
+    }
 }
 
 .dropdown-content {
