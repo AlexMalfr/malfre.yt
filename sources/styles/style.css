@@ -63,6 +63,16 @@ body {
     color: #222;
 }
 
+::selection {
+    background-color: rgba(170, 170, 170, 0.35);
+    color: inherit;
+}
+
+::-moz-selection {
+    background-color: rgba(170, 170, 170, 0.35);
+    color: inherit;
+}
+
 header { margin-bottom: 30px; overflow-x: clip; }
 footer { margin-top: 30px; }
 
@@ -802,6 +812,7 @@ img.skeleton {
     align-items: stretch;
     justify-content: center;
     text-decoration: none;
+    -webkit-user-drag: none;
 }
 
 #projects-timeline a:hover .project-div:not(.coming-soon),
@@ -843,6 +854,12 @@ img.skeleton {
     padding: 10px;
 }
 
+#projects-timeline .project-div,
+#projects-timeline .project-div * {
+    user-select: text;
+    -webkit-user-select: text;
+}
+
 .project-div .project-thumbnail-wrapper {
     width: 100%;
     aspect-ratio: 4/3;
@@ -856,6 +873,7 @@ img.skeleton {
     height: 100%;
     object-fit: cover;
     border-radius: 10px;
+    -webkit-user-drag: none;
 }
 
 .project-div .project-title {

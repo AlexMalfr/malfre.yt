@@ -1260,6 +1260,7 @@ function createProjectElement(project) {
     img.setAttribute('src', thumbnail);
     img.setAttribute('alt', name);
     img.classList.add('project-thumbnail');
+    img.draggable = false;
     img.loading = 'lazy';
     img.fetchPriority = 'low'; // Load heavy GIFs last
     img.style.opacity = '0';
@@ -1316,7 +1317,9 @@ function createProjectElement(project) {
     if (url) {
         const a = document.createElement('a');
         a.setAttribute('href', url);
+        a.draggable = false;
         a.appendChild(div);
+        a.addEventListener('dragstart', function(event) { event.preventDefault(); });
         a.addEventListener('focus', function() { scrollProjectIntoView(a); });
         return a;
     }
@@ -1464,6 +1467,12 @@ function autoScrollProjects(timestamp) {
 document.addEventListener('mousemove', function(e) {
     // Only apply on devices with a fine pointer (mouse), not touchscreens
     if (!window.matchMedia('(pointer: fine)').matches) {
+        scrollDirection = 0;
+        return;
+    }
+
+    // Keep text selection usable inside project cards by never auto-scrolling during a drag.
+    if (e.buttons !== 0) {
         scrollDirection = 0;
         return;
     }
