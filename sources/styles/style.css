@@ -131,8 +131,6 @@ a:focus-visible {
 
 /* Texte */
 abbr {
-    font-weight: bold;
-    padding-inline: 2px;
     text-decoration: dotted underline;
     text-underline-offset: 0.2em;
     cursor: help;

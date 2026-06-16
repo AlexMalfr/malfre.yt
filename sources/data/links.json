@@ -26,11 +26,11 @@
     },
     {
         "name": "GitHub",
-        "url": "https://github.com/AlexZeGamer/",
+        "url": "https://github.com/AlexMalfr/",
         "icon": "github.svg",
         "important": true,
         "dropdown": [
-            { "name": "GitHub", "url": "https://github.com/AlexZeGamer/", "icon": "github.svg" },
+            { "name": "GitHub", "url": "https://github.com/AlexMalfr/", "icon": "github.svg" },
             { "name": "GitHub Gists", "url": "https://gist.github.com/AlexMalfr", "icon": "github.svg" },
             { "name": "GitLab", "url": "https://gitlab.com/alexandre.malfreyt", "icon": "gitlab.svg" }
         ]
@@ -140,13 +140,13 @@
     },
     {
         "name": "Wikipedia",
-        "url": "https://fr.wikipedia.org/wiki/Utilisateur:AlexZeGamer",
+        "url": "https://fr.wikipedia.org/wiki/Utilisateur:AlexMalfr",
         "icon": "wikipedia.svg",
         "important": false,
         "dropdown": [
-            { "name": "Wikipedia FR", "url": "https://fr.wikipedia.org/wiki/Utilisateur:AlexZeGamer", "icon": "wikipedia.svg" },
-            { "name": "Wikipedia EN", "url": "https://en.wikipedia.org/wiki/User:AlexZeGamer", "icon": "wikipedia.svg" },
-            { "name": "Wikimedia", "url": "https://meta.wikimedia.org/wiki/User:AlexZeGamer", "icon": "wikimedia.svg" }
+            { "name": "Wikipedia FR", "url": "https://fr.wikipedia.org/wiki/Utilisateur:AlexMalfr", "icon": "wikipedia.svg" },
+            { "name": "Wikipedia EN", "url": "https://en.wikipedia.org/wiki/User:AlexMalfr", "icon": "wikipedia.svg" },
+            { "name": "Wikimedia", "url": "https://meta.wikimedia.org/wiki/User:AlexMalfr", "icon": "wikimedia.svg" }
         ]
     },
     {
