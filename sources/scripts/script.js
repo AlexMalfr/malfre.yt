@@ -1707,6 +1707,7 @@ function initCrawlerAnecdotes() {
     fetch('./sources/data/anecdotes.json')
         .then(res => res.json())
         .then(anecdotes => {
+            anecdotes = anecdotes.filter(a => a.enabled !== false);
             const ul = document.createElement('ul');
             ul.id = 'anecdotes-all';
             anecdotes.forEach(anecdote => {
@@ -1771,6 +1772,12 @@ function getAnecdote() {
             return;
         }
 
+        const enabledAnecdotes = request.response.filter(a => a.enabled !== false);
+        if (enabledAnecdotes.length === 0) {
+            showAnecdoteError();
+            return;
+        }
+
         // Get currently displayed anecdote
         let current_anecdote = document.getElementById('anecdote-text').innerHTML;
 
@@ -1778,10 +1785,10 @@ function getAnecdote() {
         let anecdote = null;
         let attempts = 0;
         while (true) {
-            let random_anecdote_id = Math.floor(Math.random() * request.response.length);
-            anecdote = request.response[random_anecdote_id];
+            let random_anecdote_id = Math.floor(Math.random() * enabledAnecdotes.length);
+            anecdote = enabledAnecdotes[random_anecdote_id];
             const text = anecdote['text'] || '';
-            if (text !== current_anecdote || ++attempts >= request.response.length) {
+            if (text !== current_anecdote || ++attempts >= enabledAnecdotes.length) {
                 break;
             }
         }
